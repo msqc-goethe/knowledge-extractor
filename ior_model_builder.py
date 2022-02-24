@@ -150,13 +150,14 @@ class Builder:
         p = json_dictionary['tests'][0]['Parameters']
         p.pop('data packet type')
         p.pop('setTimeStampSignature/incompressibleSeed')
-        print(p)
+        #print(p)
         cmd = json_dictionary['Command line']
         return results, summaries, Parameters(**p), cmd
 
 
-class PerformanceMode:
+class PerformanceModel:
     def __init__(self, cmd, parameters, summaries, results):
+        self.id = 0
         self.cmd = cmd
         self.parameters = parameters
         self.summaries = summaries

@@ -1,6 +1,6 @@
 import sys
 import json
-from ior_model_builder import Parameters, Summary, Result, Builder
+from ior_model_builder import Builder, PerformanceModel
 import sqlite3
 from sqlite3 import Error
 sys.path.append(".")
@@ -25,7 +25,9 @@ def readLog(name):
 def read_log(path):
     with open(path) as json_file:
         json_dictionary = json.loads(json_file.read())
-        results, summaries, parameters, cmd = Builder.create_from_json(json_dictionary)
+        cmd, parameters, summaries, results = Builder.create_from_json(json_dictionary)
+        # print(cmd, parameters, summaries, results)
+        return PerformanceModel(cmd, parameters, summaries, results)
 
 
 def create_connection(db_file):
@@ -35,7 +37,6 @@ def create_connection(db_file):
         print("Connection to SQLite DB successful")
     except Error as e:
         print(f"The error '{e}' occurred")
-
     return connection
 
 
@@ -52,10 +53,12 @@ def test_output():
 
 
 if __name__ == '__main__':
-    test_output()
+    print(read_log('ior_sample_mpi.json').cmd)
     """
     con = create_connection(r"pythonsqlite.db")
     # sql = "CREATE TABLE personen (vorname VARCHAR(20), nachname VARCHAR(30), geburtstag DATE)"
     sql = 'DROP TABLE personen'
     print(con.cursor().execute(sql))
     """
+    # test_output()
+
