@@ -1,17 +1,17 @@
 {
   "Version": "3.4.0+dev", 
-  "Began": "Tue Feb 22 14:53:27 2022", 
-  "Command line": "ior -O summaryFormat=json", 
+  "Began": "Thu Feb 24 16:19:14 2022", 
+  "Command line": "ior -a mpiio -c -O summaryFormat=json", 
   "Machine": "Linux LAPTOP-U6FKEA3Q", 
   "tests": [
     {
     "TestID": 0, 
-    "StartTime": "Tue Feb 22 14:53:27 2022"    , "Path": "testFile","Capacity": "251.0 GiB", "Used Capacity": "2.6%","Inodes": "16.0 Mi", "Used Inodes" : "1.1%"
+    "StartTime": "Thu Feb 24 16:19:14 2022"    , "Path": "testFile","Capacity": "251.0 GiB", "Used Capacity": "2.6%","Inodes": "16.0 Mi", "Used Inodes" : "1.1%"
 , 
     "Parameters": {
       "testID": 0, 
       "refnum": 0, 
-      "api": "POSIX", 
+      "api": "mpiio", 
       "platform": "LAPTOP-U6FKEA3Q(Linux)", 
       "testFileName": "testFile", 
       "deadlineForStonewall": 0, 
@@ -23,7 +23,7 @@
       "nodes": 1, 
       "memoryPerTask": 0, 
       "memoryPerNode": 0, 
-      "tasksPerNode": 1, 
+      "tasksPerNode": 4, 
       "repetitions": 1, 
       "multiFile": 0, 
       "interTestDelay": 0, 
@@ -47,56 +47,56 @@
       "warningAsErrors": 0, 
       "verbose": 0, 
       "data packet type": "g",
-      "setTimeStampSignature/incompressibleSeed": 0,
-      "collective": 0, 
+      "setTimeStampSignature/incompressibleSeed": 0, 
+      "collective": 1, 
       "segmentCount": 1, 
       "transferSize": 262144, 
       "blockSize": 1048576
     }
 , 
     "Options": {
-      "api": "POSIX", 
-      "apiVersion": "", 
+      "api": "mpiio", 
+      "apiVersion": "(3.1)", 
       "test filename": "testFile", 
       "access": "single-shared-file", 
-      "type": "independent", 
+      "type": "collective", 
       "segments": 1, 
       "ordering in a file": "sequential", 
       "ordering inter file": "no tasks offsets", 
       "nodes": 1, 
-      "tasks": 1, 
-      "clients per node": 1, 
+      "tasks": 4, 
+      "clients per node": 4, 
       "repetitions": 1, 
       "xfersize": "262144 bytes", 
       "blocksize": "1 MiB", 
-      "aggregate filesize": "1 MiB"
+      "aggregate filesize": "4 MiB"
     }
 , 
     "Results": [
             {
         "access": "write", 
-        "bwMiB": 2545.0874, 
+        "bwMiB": 1085.4824, 
         "blockKiB": 1024.0000, 
         "xferKiB": 256.0000, 
-        "iops": 10498.8836, 
-        "latency": 0.0001, 
-        "openTime": 0.0000, 
-        "wrRdTime": 0.0004, 
-        "closeTime": 0.0000, 
-        "totalTime": 0.0004
+        "iops": 5833.0173, 
+        "latency": 0.0007, 
+        "openTime": 0.0003, 
+        "wrRdTime": 0.0027, 
+        "closeTime": 0.0010, 
+        "totalTime": 0.0037
       }
 , 
             {
         "access": "read", 
-        "bwMiB": 9258.9492, 
+        "bwMiB": 5448.9172, 
         "blockKiB": 1024.0000, 
         "xferKiB": 256.0000, 
-        "iops": 37035.7969, 
-        "latency": 0.0000, 
+        "iops": 23882.1580, 
+        "latency": 0.0002, 
         "openTime": 0.0000, 
-        "wrRdTime": 0.0001, 
+        "wrRdTime": 0.0007, 
         "closeTime": 0.0000, 
-        "totalTime": 0.0001
+        "totalTime": 0.0007
       }
 ]
 
@@ -106,60 +106,60 @@
 "summary": [
     {
     "operation": "write", 
-    "API": "POSIX", 
+    "API": "mpiio", 
     "TestID": 0, 
     "ReferenceNumber": 0, 
     "segmentCount": 1, 
     "blockSize": 1048576, 
     "transferSize": 262144, 
-    "numTasks": 1, 
-    "tasksPerNode": 1, 
+    "numTasks": 4, 
+    "tasksPerNode": 4, 
     "repetitions": 1, 
     "filePerProc": 0, 
     "reorderTasks": 0, 
     "taskPerNodeOffset": 1, 
     "reorderTasksRandom": 0, 
     "reorderTasksRandomSeed": 0, 
-    "bwMaxMIB": 2545.0874, 
-    "bwMinMIB": 2545.0874, 
-    "bwMeanMIB": 2545.0874, 
+    "bwMaxMIB": 1085.4824, 
+    "bwMinMIB": 1085.4824, 
+    "bwMeanMIB": 1085.4824, 
     "bwStdMIB": 0.0000, 
-    "OPsMax": 10180.3495, 
-    "OPsMin": 10180.3495, 
-    "OPsMean": 10180.3495, 
+    "OPsMax": 4341.9296, 
+    "OPsMin": 4341.9296, 
+    "OPsMean": 4341.9296, 
     "OPsSD": 0.0000, 
-    "MeanTime": 0.0004, 
-    "xsizeMiB": 1.0000
+    "MeanTime": 0.0037, 
+    "xsizeMiB": 4.0000
   }
 , 
     {
     "operation": "read", 
-    "API": "POSIX", 
+    "API": "mpiio", 
     "TestID": 0, 
     "ReferenceNumber": 0, 
     "segmentCount": 1, 
     "blockSize": 1048576, 
     "transferSize": 262144, 
-    "numTasks": 1, 
-    "tasksPerNode": 1, 
+    "numTasks": 4, 
+    "tasksPerNode": 4, 
     "repetitions": 1, 
     "filePerProc": 0, 
     "reorderTasks": 0, 
     "taskPerNodeOffset": 1, 
     "reorderTasksRandom": 0, 
     "reorderTasksRandomSeed": 0, 
-    "bwMaxMIB": 9258.9492, 
-    "bwMinMIB": 9258.9492, 
-    "bwMeanMIB": 9258.9492, 
+    "bwMaxMIB": 5448.9172, 
+    "bwMinMIB": 5448.9172, 
+    "bwMeanMIB": 5448.9172, 
     "bwStdMIB": 0.0000, 
-    "OPsMax": 37035.7969, 
-    "OPsMin": 37035.7969, 
-    "OPsMean": 37035.7969, 
+    "OPsMax": 21795.6687, 
+    "OPsMin": 21795.6687, 
+    "OPsMean": 21795.6687, 
     "OPsSD": 0.0000, 
-    "MeanTime": 0.0001, 
-    "xsizeMiB": 1.0000
+    "MeanTime": 0.0007, 
+    "xsizeMiB": 4.0000
   }
 ]
 , 
-"Finished": "Tue Feb 22 14:53:27 2022"
+"Finished": "Thu Feb 24 16:19:14 2022"
 }

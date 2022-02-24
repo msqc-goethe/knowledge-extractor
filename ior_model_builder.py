@@ -1,4 +1,5 @@
 import json
+import copy
 
 
 class Parameters:
@@ -8,8 +9,7 @@ class Parameters:
                  interTestDelay, fsync, fsyncperwrite, useExistingTestFile, uniqueDir, singleXferAttempt,
                  readFile, writeFile, filePerProc, reorderTasks, reorderTasksRandom, reorderTasksRandomSeed,
                  randomOffset, checkWrite, checkRead, dataPacketType, keepFile, keepFileWithError, warningAsErrors,
-                 verbose
-                 , data_packet_type, setTimeStampSignature_incompressibleSeed, collective, segmentCount, transferSize,
+                 verbose, collective, segmentCount, transferSize,
                  blockSize):
         self.testID = testID
         self.refnum = refnum
@@ -48,12 +48,13 @@ class Parameters:
         self.keepFileWithError = keepFileWithError
         self.warningAsErrors = warningAsErrors
         self.verbose = verbose
-        self.data_packet_type = data_packet_type
-        self.setTimeStampSignature_incompressibleSeed = setTimeStampSignature_incompressibleSeed
+#        self.data_packet_type = data_packet_type
+#       self.setTimeStampSignature_incompressibleSeed = setTimeStampSignature_incompressibleSeed
         self.collective = collective
         self.segmentCount = segmentCount
         self.transferSize = transferSize
         self.blockSize = blockSize
+
 
     # @staticmethod
     # def create_from_json(json_dictionary):
@@ -123,14 +124,40 @@ class Result:
     #     return results
 
 
+class Test:
+    def __init__(self, test_id, start_time, path, used_capacity, inodes, used_inodes, parameters, options,
+                 results, finished):
+        self.TestID = test_id
+        self.StartTime = start_time
+        self.Path = path
+        self.Used_Capacity = used_capacity
+        self.Inodes = inodes
+        self.Used_Inodes = used_inodes
+        self.Parameters = parameters
+        self.Options = options
+        self.Results = results
+        self.Finished = finished
+
+
 class Builder:
     def create_from_json(json_dictionary):
         results = []
         summaries = []
-        #print(json_dictionary)
         for result in json_dictionary['tests'][0]['Results']:
             results.append(Result(**result))
         for summary in json_dictionary['summary']:
             summaries.append(Summary(**summary))
         p = json_dictionary['tests'][0]['Parameters']
-        return results, summaries, Parameters(**p)
+        p.pop('data packet type')
+        p.pop('setTimeStampSignature/incompressibleSeed')
+        print(p)
+        cmd = json_dictionary['Command line']
+        return results, summaries, Parameters(**p), cmd
+
+
+class PerformanceMode:
+    def __init__(self, cmd, parameters, summaries, results):
+        self.cmd = cmd
+        self.parameters = parameters
+        self.summaries = summaries
+        self.results = results
