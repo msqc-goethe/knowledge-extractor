@@ -1,25 +1,10 @@
 import sys
 import json
+import argparse
 from ior_model_builder import Builder, PerformanceModel, Summary
 import sqlite3
 from sqlite3 import Error
-
 sys.path.append(".")
-
-"""
-class Generic:
-    @classmethod
-    def from_dict(cls, dict):
-        obj = cls()
-        obj.__dict__.update(dict)
-        return obj
-
-
-def readLog(name):
-    with open('ior.json') as json_file:
-        x = json.loads(json_file.read(), object_hook=Generic.from_dict)
-        print(x.tests[0].Parameters)
-"""
 
 
 def read_log(path):
@@ -52,23 +37,34 @@ def test_output():
 
 
 def generate_tables(con):
-    sql_create_performances = "CREATE TABLE performances ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, cmd TEXT, ts TEXT, te TEXT, testID INTEGER , refnum INTEGER, api TEXT, platform TEXT," \
-                              " testFileName TEXT, deadlineForStonewall INTEGER, stoneWallingWearOut INTEGER, maxTimeDuration INTEGER, outlierThreshold INTEGER, options TEXT, " \
-                              "dryRun INTEGER, nodes INTEGER, memoryPerTask INTEGER, memoryPerNode INTEGER, tasksPerNode INTEGER, repetitions INTEGER, " \
-                              "multiFile INTEGER, interTestDelay INTEGER, fsync INTEGER, fsyncperwrite INTEGER, useExistingTestFile INTEGER, uniqueDir INTEGER, " \
-                              "singleXferAttempt INTEGER, readFile INTEGER, writeFile INTEGER, filePerProc INTEGER, reorderTasks INTEGER, reorderTasksRandom INTEGER, reorderTasksRandomSeed INTEGER," \
-                              "randomOffset INTEGER, checkWrite INTEGER, checkRead INTEGER, dataPacketType INTEGER, keepFile INTEGER, keepFileWithError INTEGER, warningAsErrors INTEGER," \
-                              "verbose INTEGER,collective INTEGER,segmentCount INTEGER,transferSize INTEGER,blockSize INTEGER );"
-    sql_create_summaries = "CREATE TABLE summaries ( id INTEGER PRIMARY KEY AUTOINCREMENT, performace_id INTEGER NOT NULL,  operation TEXT, API TEXT, TestID INTEGER, ReferenceNumber INTEGER, " \
-                           "segmentCount INTEGER, blockSize INTEGER, transferSize INTEGER, numTasks INTEGER, tasksPerNode INTEGER, repetitions INTEGER , filePerProc INTEGER, reorderTasks INTEGER, " \
-                           "taskPerNodeOffset INTEGER, reorderTasksRandom INTEGER , reorderTasksRandomSeed INTEGER , bwMaxMIB REAL, bwMinMIB REAL, bwMeanMIB REAL, bwStdMIB REAL, OPsMax REAL, " \
-                           "OPsMin REAL, OPsMean REAL, OPsSD REAL, MeanTime REAL, xsizeMiB REAL, CONSTRAINT summaries_FK, FOREIGN KEY (id) REFERENCES performances(id));"
-    sql_create_results = "CREATE TABLE results ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, summary_id INTEGER NOT NULL, access TEXT, " \
-                         "bwMiB REAL, blockKiB REAL,xferKiB REAL,iops REAL,latency REAL,openTime REAL,wrRdTime REAL,closeTime REAL,totalTime REAL, " \
-                         "CONSTRAINT results_FK FOREIGN KEY (id) REFERENCES summaries(id));"
-    print(con.cursor().execute(sql_create_performances))
-    print(con.cursor().execute(sql_create_summaries))
-    print(con.cursor().execute(sql_create_results))
+    cur = con.cursor()
+    tns = ["performances", "summaries", "results"]
+    for name in tns:
+        sql = "SELECT name FROM sqlite_master WHERE type=\"table\" AND name=(?)"
+        #print(sql, name)
+        cur.execute(sql,(name,))
+        rows = cur.fetchall()
+        if len(rows) != 1:
+            if name == "performances":
+                sql_create_performances = "CREATE TABLE performances ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, cmd TEXT, ts TEXT, te TEXT, testID INTEGER , refnum INTEGER, api TEXT, platform TEXT," \
+                                          " testFileName TEXT, deadlineForStonewall INTEGER, stoneWallingWearOut INTEGER, maxTimeDuration INTEGER, outlierThreshold INTEGER, options TEXT, " \
+                                          "dryRun INTEGER, nodes INTEGER, memoryPerTask INTEGER, memoryPerNode INTEGER, tasksPerNode INTEGER, repetitions INTEGER, " \
+                                          "multiFile INTEGER, interTestDelay INTEGER, fsync INTEGER, fsyncperwrite INTEGER, useExistingTestFile INTEGER, uniqueDir INTEGER, " \
+                                          "singleXferAttempt INTEGER, readFile INTEGER, writeFile INTEGER, filePerProc INTEGER, reorderTasks INTEGER, reorderTasksRandom INTEGER, reorderTasksRandomSeed INTEGER," \
+                                          "randomOffset INTEGER, checkWrite INTEGER, checkRead INTEGER, dataPacketType INTEGER, keepFile INTEGER, keepFileWithError INTEGER, warningAsErrors INTEGER," \
+                                          "verbose INTEGER,collective INTEGER,segmentCount INTEGER,transferSize INTEGER,blockSize INTEGER );"
+                print(con.cursor().execute(sql_create_performances))
+            elif name == "summaries":
+                sql_create_summaries = "CREATE TABLE summaries ( id INTEGER PRIMARY KEY AUTOINCREMENT, performace_id INTEGER NOT NULL,  operation TEXT, API TEXT, TestID INTEGER, ReferenceNumber INTEGER, " \
+                                       "segmentCount INTEGER, blockSize INTEGER, transferSize INTEGER, numTasks INTEGER, tasksPerNode INTEGER, repetitions INTEGER , filePerProc INTEGER, reorderTasks INTEGER, " \
+                                       "taskPerNodeOffset INTEGER, reorderTasksRandom INTEGER , reorderTasksRandomSeed INTEGER , bwMaxMIB REAL, bwMinMIB REAL, bwMeanMIB REAL, bwStdMIB REAL, OPsMax REAL, " \
+                                       "OPsMin REAL, OPsMean REAL, OPsSD REAL, MeanTime REAL, xsizeMiB REAL, CONSTRAINT summaries_FK, FOREIGN KEY (id) REFERENCES performances(id));"
+                print(con.cursor().execute(sql_create_summaries))
+            elif name == "results":
+                sql_create_results = "CREATE TABLE results ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, summary_id INTEGER NOT NULL, access TEXT, " \
+                                     "bwMiB REAL, blockKiB REAL,xferKiB REAL,iops REAL,latency REAL,openTime REAL,wrRdTime REAL,closeTime REAL,totalTime REAL, " \
+                                     "CONSTRAINT results_FK FOREIGN KEY (id) REFERENCES summaries(id));"
+                print(con.cursor().execute(sql_create_results))
 
 
 def delete_tables(con):
@@ -143,11 +139,48 @@ def insert_result(con, summary_id, operation, results):
             result.openTime, result.wrRdTime, result.closeTime, result.totalTime))
             con.commit()
 
+
+def get_fs_settings(parser):
+    parser.add_argument('-t', type=str,
+                        help='Type e.g, RAID0')
+    parser.add_argument('-s', type=int,
+                        help='Chunksize e.g, 1M')
+    parser.add_argument('-c', type=int,
+                        help='Number of storage targets, e.g. 4')
+    parser.add_argument('-p', type=int,
+                        help='Storage Pool')
+    args = parser.parse_args()
+    print(args.t)
+
+
 if __name__ == '__main__':
-    pm = read_log('ior_sample_i4.json')
     con = create_connection(r"pythonsqlite.db")
+    # todo
+    # pass pfs settings through argument
+    # otherwise settings can be passed by using e.g., "beegfs-ctl --getentryinfo /scratch/fuchs/...."
     if 0:
-        delete_tables(con)
+        parser = argparse.ArgumentParser(description='file system')
+        parser.add_argument('-j', type=str,
+                            help='Path to IOR json output')
+        args = parser.parse_args()
+        print(args.j)
+        if args.j is not None:
+            pm = read_log(args.j)
+        else:
+            pm = read_log('ior_sample_i4.json')
+        if 0:
+            delete_tables(con)
+        else:
+            generate_tables(con)
+            insert_performance(con, pm)
+
+    # todo
+    # specify the path for IOR json output and iterate over multiple JUBE sub-directory
+    # may pass the path as argument
     else:
-        generate_tables(con)
-        insert_performance(con, pm)
+        pm = read_log('ior_sample_i4.json')
+        if 0:
+            delete_tables(con)
+        else:
+            generate_tables(con)
+            insert_performance(con, pm)

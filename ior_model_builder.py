@@ -150,7 +150,6 @@ class Builder:
         p = json_dictionary['tests'][0]['Parameters']
         p.pop('data packet type')
         p.pop('setTimeStampSignature/incompressibleSeed')
-        #print(p)
         cmd = json_dictionary['Command line']
         ts = json_dictionary['Began']
         te = json_dictionary['Finished']
