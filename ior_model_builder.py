@@ -152,13 +152,17 @@ class Builder:
         p.pop('setTimeStampSignature/incompressibleSeed')
         #print(p)
         cmd = json_dictionary['Command line']
-        return results, summaries, Parameters(**p), cmd
+        ts = json_dictionary['Began']
+        te = json_dictionary['Finished']
+        return PerformanceModel(cmd, ts, te, Parameters(**p), summaries, results)
 
 
 class PerformanceModel:
-    def __init__(self, cmd, parameters, summaries, results):
+    def __init__(self, cmd, ts, te, parameters, summaries, results):
         self.id = 0
         self.cmd = cmd
+        self.ts = ts
+        self.te = te
         self.parameters = parameters
         self.summaries = summaries
         self.results = results
