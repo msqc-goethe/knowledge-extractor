@@ -55,7 +55,7 @@ def generate_tables(con):
                                           "verbose INTEGER,collective INTEGER,segmentCount INTEGER,transferSize INTEGER,blockSize INTEGER );"
                 print(con.cursor().execute(sql_create_performances))
             elif name == "summaries":
-                sql_create_summaries = "CREATE TABLE summaries ( id INTEGER PRIMARY KEY AUTOINCREMENT, performace_id INTEGER NOT NULL,  operation TEXT, API TEXT, TestID INTEGER, ReferenceNumber INTEGER, " \
+                sql_create_summaries = "CREATE TABLE summaries ( id INTEGER PRIMARY KEY AUTOINCREMENT, performance_id INTEGER NOT NULL,  operation TEXT, API TEXT, TestID INTEGER, ReferenceNumber INTEGER, " \
                                        "segmentCount INTEGER, blockSize INTEGER, transferSize INTEGER, numTasks INTEGER, tasksPerNode INTEGER, repetitions INTEGER , filePerProc INTEGER, reorderTasks INTEGER, " \
                                        "taskPerNodeOffset INTEGER, reorderTasksRandom INTEGER , reorderTasksRandomSeed INTEGER , bwMaxMIB REAL, bwMinMIB REAL, bwMeanMIB REAL, bwStdMIB REAL, OPsMax REAL, " \
                                        "OPsMin REAL, OPsMean REAL, OPsSD REAL, MeanTime REAL, xsizeMiB REAL, CONSTRAINT summaries_FK, FOREIGN KEY (id) REFERENCES performances(id));"
@@ -106,18 +106,20 @@ def insert_performance(con, pm):
                                             pm.parameters.transferSize, pm.parameters.blockSize))
     con.commit()
     if cursor.lastrowid > 0:
-        insert_summary(con, pm.summaries)
+        pm.id = cursor.lastrowid
+        insert_summary(con, pm)
         return 1
 
 
-def insert_summary(con, summaries):
-    sql_insert_summary = '''INSERT INTO summaries (performace_id, operation, API, TestID, ReferenceNumber, segmentCount, 
+def insert_summary(con, pm):
+    print()
+    sql_insert_summary = '''INSERT INTO summaries (performance_id, operation, API, TestID, ReferenceNumber, segmentCount, 
     blockSize, transferSize, numTasks, tasksPerNode, repetitions, filePerProc, reorderTasks, taskPerNodeOffset, 
     reorderTasksRandom, reorderTasksRandomSeed, bwMaxMIB, bwMinMIB, bwMeanMIB, bwStdMIB, OPsMax, OPsMin, OPsMean, OPsSD, MeanTime, xsizeMiB) 
     VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);'''
     # print(sql_insert_summary)
     cursor = con.cursor()
-    for summary in summaries:
+    for summary in pm.summaries:
         cursor.execute(sql_insert_summary, (
         pm.id, summary.operation, summary.API, summary.TestID, summary.ReferenceNumber, summary.segmentCount,
         summary.blockSize, summary.transferSize, summary.numTasks, summary.tasksPerNode, summary.repetitions,
