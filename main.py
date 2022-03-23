@@ -1,9 +1,11 @@
 import sys
+import os
 import json
 import argparse
-from ior_model_builder import Builder, PerformanceModel, Summary
+from ior_model_builder import Builder, PerformanceModel, Summary, Beegfs
 import sqlite3
 from sqlite3 import Error
+
 sys.path.append(".")
 
 
@@ -41,8 +43,8 @@ def generate_tables(con):
     tns = ["performances", "summaries", "results"]
     for name in tns:
         sql = "SELECT name FROM sqlite_master WHERE type=\"table\" AND name=(?)"
-        #print(sql, name)
-        cur.execute(sql,(name,))
+        # print(sql, name)
+        cur.execute(sql, (name,))
         rows = cur.fetchall()
         if len(rows) != 1:
             if name == "performances":
@@ -84,26 +86,27 @@ def insert_performance(con, pm):
           segmentCount, transferSize, blockSize) VALUES(?, ?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);'''
     print(sql_insert_performance)
     cursor = con.cursor()
-    cursor.execute(sql_insert_performance, (pm.cmd, pm.ts, pm.te, pm.parameters.testID, pm.parameters.refnum, pm.parameters.api
-                                            , pm.parameters.platform, pm.parameters.testFileName,
-                                            pm.parameters.deadlineForStonewall,
-                                            pm.parameters.stoneWallingWearOut, pm.parameters.maxTimeDuration,
-                                            pm.parameters.outlierThreshold, pm.parameters.options,
-                                            pm.parameters.dryRun, pm.parameters.nodes, pm.parameters.memoryPerTask,
-                                            pm.parameters.memoryPerNode, pm.parameters.tasksPerNode,
-                                            pm.parameters.repetitions,
-                                            pm.parameters.multiFile, pm.parameters.interTestDelay, pm.parameters.fsync,
-                                            pm.parameters.fsyncperwrite, pm.parameters.useExistingTestFile,
-                                            pm.parameters.uniqueDir, pm.parameters.singleXferAttempt,
-                                            pm.parameters.readFile, pm.parameters.writeFile, pm.parameters.filePerProc,
-                                            pm.parameters.reorderTasks, pm.parameters.reorderTasksRandom,
-                                            pm.parameters.reorderTasksRandomSeed, pm.parameters.randomOffset,
-                                            pm.parameters.checkWrite,
-                                            pm.parameters.checkRead, pm.parameters.dataPacketType,
-                                            pm.parameters.keepFile, pm.parameters.keepFileWithError,
-                                            pm.parameters.warningAsErrors,
-                                            pm.parameters.verbose, pm.parameters.collective, pm.parameters.segmentCount,
-                                            pm.parameters.transferSize, pm.parameters.blockSize))
+    cursor.execute(sql_insert_performance,
+                   (pm.cmd, pm.ts, pm.te, pm.parameters.testID, pm.parameters.refnum, pm.parameters.api
+                    , pm.parameters.platform, pm.parameters.testFileName,
+                    pm.parameters.deadlineForStonewall,
+                    pm.parameters.stoneWallingWearOut, pm.parameters.maxTimeDuration,
+                    pm.parameters.outlierThreshold, pm.parameters.options,
+                    pm.parameters.dryRun, pm.parameters.nodes, pm.parameters.memoryPerTask,
+                    pm.parameters.memoryPerNode, pm.parameters.tasksPerNode,
+                    pm.parameters.repetitions,
+                    pm.parameters.multiFile, pm.parameters.interTestDelay, pm.parameters.fsync,
+                    pm.parameters.fsyncperwrite, pm.parameters.useExistingTestFile,
+                    pm.parameters.uniqueDir, pm.parameters.singleXferAttempt,
+                    pm.parameters.readFile, pm.parameters.writeFile, pm.parameters.filePerProc,
+                    pm.parameters.reorderTasks, pm.parameters.reorderTasksRandom,
+                    pm.parameters.reorderTasksRandomSeed, pm.parameters.randomOffset,
+                    pm.parameters.checkWrite,
+                    pm.parameters.checkRead, pm.parameters.dataPacketType,
+                    pm.parameters.keepFile, pm.parameters.keepFileWithError,
+                    pm.parameters.warningAsErrors,
+                    pm.parameters.verbose, pm.parameters.collective, pm.parameters.segmentCount,
+                    pm.parameters.transferSize, pm.parameters.blockSize))
     con.commit()
     if cursor.lastrowid > 0:
         pm.id = cursor.lastrowid
@@ -121,11 +124,11 @@ def insert_summary(con, pm):
     cursor = con.cursor()
     for summary in pm.summaries:
         cursor.execute(sql_insert_summary, (
-        pm.id, summary.operation, summary.API, summary.TestID, summary.ReferenceNumber, summary.segmentCount,
-        summary.blockSize, summary.transferSize, summary.numTasks, summary.tasksPerNode, summary.repetitions,
-        summary.filePerProc, summary.reorderTasks, summary.taskPerNodeOffset, summary.reorderTasksRandom,
-        summary.reorderTasksRandomSeed, summary.bwMaxMIB, summary.bwMinMIB, summary.bwMeanMIB, summary.bwStdMIB,
-        summary.OPsMax, summary.OPsMin, summary.OPsMean, summary.OPsSD, summary.MeanTime, summary.xsizeMiB))
+            pm.id, summary.operation, summary.API, summary.TestID, summary.ReferenceNumber, summary.segmentCount,
+            summary.blockSize, summary.transferSize, summary.numTasks, summary.tasksPerNode, summary.repetitions,
+            summary.filePerProc, summary.reorderTasks, summary.taskPerNodeOffset, summary.reorderTasksRandom,
+            summary.reorderTasksRandomSeed, summary.bwMaxMIB, summary.bwMinMIB, summary.bwMeanMIB, summary.bwStdMIB,
+            summary.OPsMax, summary.OPsMin, summary.OPsMean, summary.OPsSD, summary.MeanTime, summary.xsizeMiB))
         con.commit()
         insert_result(con, cursor.lastrowid, summary.operation, pm.results)
 
@@ -137,30 +140,32 @@ def insert_result(con, summary_id, operation, results):
             VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);'''
             cursor = con.cursor()
             cursor.execute(sql_insert_result, (
-            summary_id, result.access, result.bwMiB, result.blockKiB, result.xferKiB, result.iops, result.latency,
-            result.openTime, result.wrRdTime, result.closeTime, result.totalTime))
+                summary_id, result.access, result.bwMiB, result.blockKiB, result.xferKiB, result.iops, result.latency,
+                result.openTime, result.wrRdTime, result.closeTime, result.totalTime))
             con.commit()
 
 
-def get_fs_settings(parser):
-    parser.add_argument('-t', type=str,
-                        help='Type e.g, RAID0')
-    parser.add_argument('-s', type=int,
-                        help='Chunksize e.g, 1M')
-    parser.add_argument('-c', type=int,
-                        help='Number of storage targets, e.g. 4')
-    parser.add_argument('-p', type=int,
-                        help='Storage Pool')
-    args = parser.parse_args()
-    print(args.t)
+def get_fs_settings():
+    with os.popen('df -T .') as stream:
+        for i, line in enumerate(stream):
+            if i == 1:
+                if line.split()[1] == '9p':
+                    pass
+                elif line.split()[1] == 'beegfs':
+                    get_beegfs_settings()
 
 
-if __name__ == '__main__':
-    con = create_connection(r"pythonsqlite.db")
-    # todo
-    # pass pfs settings through argument
-    # otherwise settings can be passed by using e.g., "beegfs-ctl --getentryinfo /scratch/fuchs/...."
-    if 0:
+def get_beegfs_settings():
+    settings = []
+    with os.popen('beegfs-ctl --getentryinfo .') as stream:
+        for i, line in enumerate(stream):
+            if len(line.split(': ', 1)) > 1:
+                settings.append(line.split(': ', 1)[1])
+    return Beegfs(settings[0], settings[1], settings[2], settings[3], settings[4], settings[5])
+
+
+def startup(flag, con):
+    if flag:
         parser = argparse.ArgumentParser(description='file system')
         parser.add_argument('-j', type=str,
                             help='Path to IOR json output')
@@ -180,9 +185,15 @@ if __name__ == '__main__':
     # specify the path for IOR json output and iterate over multiple JUBE sub-directory
     # may pass the path as argument
     else:
-        pm = read_log('ior_sample_i4.json')
+        pm = read_log('ior_sample_mpi.json')
         if 0:
             delete_tables(con)
         else:
             generate_tables(con)
             insert_performance(con, pm)
+
+
+if __name__ == '__main__':
+    con = create_connection(r"pythonsqlite.db")
+    # get_fs_settings()
+    get_beegfs_settings()

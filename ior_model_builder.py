@@ -165,3 +165,13 @@ class PerformanceModel:
         self.parameters = parameters
         self.summaries = summaries
         self.results = results
+
+
+class Beegfs:
+    def __init__(self, entryType, entryID, metadataNode, StripePatternType, StripePatternChunkSize, StripePatternStoragePool):
+        self.entryType = entryType
+        self.entryID = entryID
+        self.metadataNode = metadataNode
+        self.StripePatternType = StripePatternType
+        self.StripePatternChunkSize = StripePatternChunkSize
+        self.StripePatternStoragePool = StripePatternStoragePool
