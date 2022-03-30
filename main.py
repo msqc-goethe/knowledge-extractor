@@ -180,10 +180,6 @@ def startup(flag, con):
         else:
             generate_tables(con)
             insert_performance(con, pm)
-
-    # todo
-    # specify the path for IOR json output and iterate over multiple JUBE sub-directory
-    # may pass the path as argument
     else:
         pm = read_log('ior_sample_mpi.json')
         if 0:
@@ -195,5 +191,5 @@ def startup(flag, con):
 
 if __name__ == '__main__':
     con = create_connection(r"pythonsqlite.db")
-    # get_fs_settings()
-    get_beegfs_settings()
+    get_fs_settings()
+    #get_beegfs_settings()
