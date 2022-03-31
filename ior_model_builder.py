@@ -151,7 +151,7 @@ class Test:
 
 
 class Builder:
-    def create_from_json(json_dictionary):
+    def create_from_json(json_dictionary, fs):
         # print(json_dictionary)
         results = []
         summaries = []
@@ -168,7 +168,7 @@ class Builder:
         cmd = json_dictionary['Command line']
         ts = json_dictionary['Began']
         te = json_dictionary['Finished']
-        return PerformanceModel(cmd, ts, te, Parameters(**p), summaries, results)
+        return PerformanceModel(cmd, ts, te, Parameters(**p), summaries, results, fs)
 
 
 class PerformanceModel:
