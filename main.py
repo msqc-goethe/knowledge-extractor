@@ -186,10 +186,15 @@ def startup(flag, con):
             delete_tables(con)
         else:
             generate_tables(con)
-            insert_performance(con, pm)
+            pfad = 'ior_sample_mpi.json'
+            while 1:
+                pfad = pfad +str(1)
+                pm=read_log(pfad)
+                insert_performance(con, pm)
 
 
 if __name__ == '__main__':
     con = create_connection(r"pythonsqlite.db")
-    get_fs_settings()
+    startup(0,con)
+    #get_fs_settings()
     #get_beegfs_settings()
