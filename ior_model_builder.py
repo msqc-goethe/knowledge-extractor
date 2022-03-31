@@ -3,14 +3,15 @@ import copy
 
 
 class Parameters:
-    def __init__(self, testID, refnum, api, platform, testFileName, hintsFileName, deadlineForStonewall, stoneWallingWearOut,
+    def __init__(self, testID, refnum, api, platform, testFileName,  deadlineForStonewall, stoneWallingWearOut,
                  maxTimeDuration, outlierThreshold,
                  options, dryRun, nodes, memoryPerTask, memoryPerNode, tasksPerNode, repetitions, multiFile,
-                 interTestDelay, fsync, fsyncperwrite, useExistingTestFile, showHints, uniqueDir, individualDataSets, singleXferAttempt,
+                 interTestDelay, fsync, fsyncperwrite, useExistingTestFile,  uniqueDir,  singleXferAttempt,
                  readFile, writeFile, filePerProc, reorderTasks, reorderTasksRandom, reorderTasksRandomSeed,
-                 randomOffset, checkWrite, checkRead, preallocate, useFileView, setAlignment, storeFileOffset, useSharedFilePointer, useStridedDatatype,  keepFile, keepFileWithError, quitOnError,
+                 randomOffset, checkWrite, checkRead, keepFile, keepFileWithError, quitOnError,
                  verbose, collective, segmentCount, transferSize,
-                 blockSize, dataPacketType="(null)", warningAsErrors="(null)"):
+                 blockSize, hintsFileName="", showHints=-1, individualDataSets=-1, preallocate=-1, useFileView=-1,
+                 setAlignment=-1, storeFileOffset=-1, useSharedFilePointer=-1, useStridedDatatype=-1, warningAsErrors=-1):
         self.testID = testID
         self.refnum = refnum
         self.api = api
@@ -50,13 +51,12 @@ class Parameters:
         self.useFileView = useFileView
         self.setAlignment = setAlignment
         self.storeFileOffset = storeFileOffset
-        self.dataPacketType = dataPacketType
+        # self.dataPacketType = dataPacketType
         self.useSharedFilePointer = useSharedFilePointer
         self.useStridedDatatype = useStridedDatatype
         self.keepFile = keepFile
         self.keepFileWithError = keepFileWithError
         self.quitOnError = quitOnError
-        self.warningAsErrors = warningAsErrors
         self.verbose = verbose
 #        self.data_packet_type = data_packet_type
 #       self.setTimeStampSignature_incompressibleSeed = setTimeStampSignature_incompressibleSeed
@@ -64,6 +64,7 @@ class Parameters:
         self.segmentCount = segmentCount
         self.transferSize = transferSize
         self.blockSize = blockSize
+        self.warningAsErrors = warningAsErrors
 
 
     # @staticmethod
@@ -151,13 +152,14 @@ class Test:
 
 class Builder:
     def create_from_json(json_dictionary):
-        print(json_dictionary)
+        # print(json_dictionary)
         results = []
         summaries = []
         # for result in json_dictionary['tests'][0]['Results']:
-        for result in json_dictionary['tests'][0]['Results'][0]:
-            print(result)
-            results.append(Result(**result))
+        for result_s in json_dictionary['tests'][0]['Results']:
+            for result in result_s:
+                #print(result)
+                results.append(Result(**result))
         for summary in json_dictionary['summary']:
             summaries.append(Summary(**summary))
         p = json_dictionary['tests'][0]['Parameters']
@@ -170,7 +172,7 @@ class Builder:
 
 
 class PerformanceModel:
-    def __init__(self, cmd, ts, te, parameters, summaries, results):
+    def __init__(self, cmd, ts, te, parameters, summaries, results, fs):
         self.id = 0
         self.cmd = cmd
         self.ts = ts
@@ -178,6 +180,7 @@ class PerformanceModel:
         self.parameters = parameters
         self.summaries = summaries
         self.results = results
+        self.fs = fs
 
 
 class Beegfs:
