@@ -40,7 +40,7 @@ def test_output():
 
 def generate_tables(con):
     cur = con.cursor()
-    tns = ["performances", "summaries", "results"]
+    tns = ["performances", "summaries", "results", "filesystems"]
     for name in tns:
         sql = "SELECT name FROM sqlite_master WHERE type=\"table\" AND name=(?)"
         # print(sql, name)
@@ -73,6 +73,7 @@ def generate_tables(con):
                 sql_create_filesystems = "CREATE TABLE filesystems ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, performance_id INTEGER NOT NULL, type TEXT, " \
                                      "settings REAL, " \
                                      "CONSTRAINT results_FK FOREIGN KEY (performance_id) REFERENCES performances(id));"
+		con.cursor().execute(sql_create_filesystems)
 
 
 def delete_tables(con):
@@ -85,7 +86,7 @@ def delete_tables(con):
 def insert_filesystem(con, pm):
     sql_insert_result = '''INSERT INTO filesystems (performance_id, type, settings) VALUES(?, ?, ?);'''
     cursor = con.cursor()
-    cursor.execute(sql_insert_result, (pm.id, pm.fs_type, pm.fs_settings))
+    cursor.execute(sql_insert_result, (pm.id, pm.fs.type, pm.fs.settings))
     con.commit()
 
 
@@ -168,7 +169,7 @@ def get_fs_settings():
                 elif line.split()[1] == 'beegfs':
                     bfs = get_beegfs_settings()
                     fs.name = "beegfs"
-                    fs.settings = json.dumps(bfs)
+                    fs.settings = json.dumps(bfs.__dict__)
     return fs
 
 
@@ -204,7 +205,7 @@ def startup(flag, con, mod):
         else:
             if mod == "cluster":
                 fs = get_fs_settings()
-                #generate_tables(con)
+                generate_tables(con)
                 rootdir = '.'
                 for subdir, dirs, files in os.walk(rootdir):
                     for file in files:
