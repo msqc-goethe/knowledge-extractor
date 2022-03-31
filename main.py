@@ -159,8 +159,9 @@ def get_beegfs_settings():
     settings = []
     with os.popen('beegfs-ctl --getentryinfo .') as stream:
         for i, line in enumerate(stream):
-            if len(line.split(': ', 1)) > 1:
+            if len(line.split(': ', 1)) > 1: 
                 settings.append(line.split(': ', 1)[1])
+    #print(settings[0],'\n',settings[1], '\n', settings[2], settings[3], settings[4], settings[5])
     return Beegfs(settings[0], settings[1], settings[2], settings[3], settings[4], settings[5])
 
 
@@ -192,4 +193,4 @@ def startup(flag, con):
 if __name__ == '__main__':
     con = create_connection(r"pythonsqlite.db")
     get_fs_settings()
-    #get_beegfs_settings()
+    startup(0, con)
