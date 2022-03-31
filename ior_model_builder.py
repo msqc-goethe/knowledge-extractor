@@ -183,6 +183,12 @@ class PerformanceModel:
         self.fs = fs
 
 
+class FilesystemModel:
+    def __init__(self, type="", settings=""):
+        self.type = type
+        self.settings = settings
+
+
 class Beegfs:
     def __init__(self, entryType, entryID, metadataNode, StripePatternType, StripePatternChunkSize, StripePatternStoragePool):
         self.entryType = entryType

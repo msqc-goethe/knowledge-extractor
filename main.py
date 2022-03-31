@@ -2,7 +2,7 @@ import sys
 import os
 import json
 import argparse
-from ior_model_builder import Builder, PerformanceModel, Summary, Beegfs
+from ior_model_builder import Builder, PerformanceModel, Summary, Beegfs, FilesystemModel
 import sqlite3
 from sqlite3 import Error
 
@@ -159,13 +159,17 @@ def insert_result(con, summary_id, operation, results):
 
 
 def get_fs_settings():
+    fs = FilesystemModel()
     with os.popen('df -T .') as stream:
         for i, line in enumerate(stream):
             if i == 1:
                 if line.split()[1] == '9p':
                     pass
                 elif line.split()[1] == 'beegfs':
-                    return get_beegfs_settings()
+                    bfs = get_beegfs_settings()
+                    fs.name = "beegfs"
+                    fs.settings = json.dumps(bfs)
+    return fs
 
 
 def get_beegfs_settings():
@@ -207,7 +211,8 @@ def startup(flag, con, mod):
                         if file == 'stdout':
                             print(os.path.join(subdir, file))
                             pm = read_log(os.path.join(subdir, file), fs)
-                            #insert_performance(con, pm)
+                            insert_performance(con, pm)
+                            insert_filesystem(con, pm)
             else:
                 generate_tables(con)
                 rootdir = '.'
@@ -217,6 +222,7 @@ def startup(flag, con, mod):
                             print(os.path.join(subdir, file))
                             pm = read_log(os.path.join(subdir, file))
                             insert_performance(con, pm)
+
 
 
 if __name__ == '__main__':
