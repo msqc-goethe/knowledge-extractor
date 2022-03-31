@@ -73,7 +73,7 @@ def generate_tables(con):
                 sql_create_filesystems = "CREATE TABLE filesystems ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, performance_id INTEGER NOT NULL, type TEXT, " \
                                      "settings REAL, " \
                                      "CONSTRAINT results_FK FOREIGN KEY (performance_id) REFERENCES performances(id));"
-		con.cursor().execute(sql_create_filesystems)
+                con.cursor().execute(sql_create_filesystems)
 
 
 def delete_tables(con):
