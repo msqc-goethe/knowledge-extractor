@@ -174,7 +174,7 @@ def get_beegfs_settings():
         for i, line in enumerate(stream):
             if len(line.split(': ', 1)) > 1:
                 settings.append(line.split(': ', 1)[1])
-    # print(settings[0],'\n',settings[1], '\n', settings[2], settings[3], settings[4], settings[5])
+    print(settings[0],'\n',settings[1], '\n', settings[2], settings[3], settings[4], settings[5])
     return Beegfs(settings[0], settings[1], settings[2], settings[3], settings[4], settings[5])
 
 
@@ -200,14 +200,14 @@ def startup(flag, con, mod):
         else:
             if mod == "cluster":
                 fs = get_fs_settings()
-                generate_tables(con)
+                #generate_tables(con)
                 rootdir = '.'
                 for subdir, dirs, files in os.walk(rootdir):
                     for file in files:
                         if file == 'stdout':
                             print(os.path.join(subdir, file))
                             pm = read_log(os.path.join(subdir, file), fs)
-                            insert_performance(con, pm)
+                            #insert_performance(con, pm)
             else:
                 generate_tables(con)
                 rootdir = '.'
