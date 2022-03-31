@@ -3,19 +3,20 @@ import copy
 
 
 class Parameters:
-    def __init__(self, testID, refnum, api, platform, testFileName, deadlineForStonewall, stoneWallingWearOut,
+    def __init__(self, testID, refnum, api, platform, testFileName, hintsFileName, deadlineForStonewall, stoneWallingWearOut,
                  maxTimeDuration, outlierThreshold,
                  options, dryRun, nodes, memoryPerTask, memoryPerNode, tasksPerNode, repetitions, multiFile,
-                 interTestDelay, fsync, fsyncperwrite, useExistingTestFile, uniqueDir, singleXferAttempt,
+                 interTestDelay, fsync, fsyncperwrite, useExistingTestFile, showHints, uniqueDir, individualDataSets, singleXferAttempt,
                  readFile, writeFile, filePerProc, reorderTasks, reorderTasksRandom, reorderTasksRandomSeed,
-                 randomOffset, checkWrite, checkRead, dataPacketType, keepFile, keepFileWithError, warningAsErrors,
+                 randomOffset, checkWrite, checkRead, preallocate, useFileView, setAlignment, storeFileOffset, useSharedFilePointer, useStridedDatatype,  keepFile, keepFileWithError, quitOnError,
                  verbose, collective, segmentCount, transferSize,
-                 blockSize):
+                 blockSize, dataPacketType="(null)", warningAsErrors="(null)"):
         self.testID = testID
         self.refnum = refnum
         self.api = api
         self.platform = platform
         self.testFileName = testFileName
+        self.hintsFileName = hintsFileName
         self.deadlineForStonewall = deadlineForStonewall
         self.stoneWallingWearOut = stoneWallingWearOut
         self.maxTimeDuration = maxTimeDuration
@@ -32,7 +33,9 @@ class Parameters:
         self.fsync = fsync
         self.fsyncperwrite = fsyncperwrite
         self.useExistingTestFile = useExistingTestFile
+        self.showHints =  showHints
         self.uniqueDir = uniqueDir
+        self.individualDataSets = individualDataSets
         self.singleXferAttempt = singleXferAttempt
         self.readFile = readFile
         self.writeFile = writeFile
@@ -43,9 +46,16 @@ class Parameters:
         self.randomOffset = randomOffset
         self.checkWrite = checkWrite
         self.checkRead = checkRead
+        self.preallocate = preallocate
+        self.useFileView = useFileView
+        self.setAlignment = setAlignment
+        self.storeFileOffset = storeFileOffset
         self.dataPacketType = dataPacketType
+        self.useSharedFilePointer = useSharedFilePointer
+        self.useStridedDatatype = useStridedDatatype
         self.keepFile = keepFile
         self.keepFileWithError = keepFileWithError
+        self.quitOnError = quitOnError
         self.warningAsErrors = warningAsErrors
         self.verbose = verbose
 #        self.data_packet_type = data_packet_type
@@ -141,9 +151,12 @@ class Test:
 
 class Builder:
     def create_from_json(json_dictionary):
+        print(json_dictionary)
         results = []
         summaries = []
-        for result in json_dictionary['tests'][0]['Results']:
+        # for result in json_dictionary['tests'][0]['Results']:
+        for result in json_dictionary['tests'][0]['Results'][0]:
+            print(result)
             results.append(Result(**result))
         for summary in json_dictionary['summary']:
             summaries.append(Summary(**summary))

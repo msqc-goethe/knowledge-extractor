@@ -165,7 +165,7 @@ def get_beegfs_settings():
     return Beegfs(settings[0], settings[1], settings[2], settings[3], settings[4], settings[5])
 
 
-def startup(flag, con):
+def startup(flag, con, mod):
     if flag:
         parser = argparse.ArgumentParser(description='file system')
         parser.add_argument('-j', type=str,
@@ -182,15 +182,22 @@ def startup(flag, con):
             generate_tables(con)
             insert_performance(con, pm)
     else:
-        pm = read_log('ior_sample_mpi.json')
         if 0:
             delete_tables(con)
         else:
-            generate_tables(con)
-            insert_performance(con, pm)
+            if mod == "cluster":
+                get_fs_settings()
+            else:
+                generate_tables(con)
+                rootdir = '.'
+                for subdir, dirs, files in os.walk(rootdir):
+                    for file in files:
+                        if file == 'stdout':
+                            print(os.path.join(subdir, file))
+                            pm = read_log(os.path.join(subdir, file))
+                            insert_performance(con, pm)
 
 
 if __name__ == '__main__':
     con = create_connection(r"pythonsqlite.db")
-    get_fs_settings()
-    startup(0, con)
+    startup(0, con, "local")
