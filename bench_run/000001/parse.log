@@ -1,0 +1,20 @@
+[2022-03-31 10:58:37,094]:DEBUG: Command: jube run -e /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/ior.xml
+[2022-03-31 10:58:37,094]:DEBUG: Version: 2.4.2
+[2022-03-31 10:58:37,094]:DEBUG: Parsing /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/ior.xml
+[2022-03-31 10:58:37,096]:DEBUG:   --> Preprocess run 1 <--
+[2022-03-31 10:58:37,096]:DEBUG:   Remove invalid tags
+[2022-03-31 10:58:37,097]:DEBUG:     Available tags: 
+[2022-03-31 10:58:37,097]:DEBUG:   Remove invalid tags
+[2022-03-31 10:58:37,097]:DEBUG:     Available tags: 
+[2022-03-31 10:58:37,097]:DEBUG:   Read $JUBE_INCLUDE_PATH
+[2022-03-31 10:58:37,097]:DEBUG:   Preprocess xml tree
+[2022-03-31 10:58:37,097]:DEBUG:     path: /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf
+[2022-03-31 10:58:37,097]:DEBUG:   No preprocessing changes were detected, stop additional include-preprocess runs.
+[2022-03-31 10:58:37,097]:DEBUG:   Remove invalid tags
+[2022-03-31 10:58:37,097]:DEBUG:     Available tags: 
+[2022-03-31 10:58:37,097]:DEBUG:   Preprocess done
+[2022-03-31 10:58:37,098]:DEBUG:   Preprocess benchmark xml tree
+[2022-03-31 10:58:37,098]:DEBUG:   Parsing <parameterset name="ior_parameter">
+[2022-03-31 10:58:37,098]:DEBUG:   Parsing <step name="execute">
+[2022-03-31 10:58:37,099]:DEBUG: Start consistency check
+[2022-03-31 10:58:37,099]:DEBUG: Create benchmark directory

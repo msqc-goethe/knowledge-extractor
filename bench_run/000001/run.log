@@ -1,0 +1,188 @@
+[2022-03-31 10:58:37,113]:DEBUG: Create initial workpackages
+[2022-03-31 10:58:37,115]:DEBUG: Expand parameter templates:
+[2022-03-31 10:58:37,116]:DEBUG:     "nodes": 10;20;40;80
+[2022-03-31 10:58:37,171]:DEBUG: Store initial workpackage information
+[2022-03-31 10:58:37,178]:DEBUG: Start benchmark run
+[2022-03-31 10:58:37,178]:INFO: ######################################################################
+[2022-03-31 10:58:37,178]:INFO: # benchmark: ior
+[2022-03-31 10:58:37,178]:INFO: # id: 1
+[2022-03-31 10:58:37,178]:INFO: #
+[2022-03-31 10:58:37,178]:INFO: # Ior benchmark
+[2022-03-31 10:58:37,178]:INFO: ######################################################################
+[2022-03-31 10:58:37,180]:DEBUG: ----- execute ( iter:0 | id:0 | parents: | cycle:0 ) -----
+[2022-03-31 10:58:37,182]:DEBUG:   available parameter:
+[2022-03-31 10:58:37,182]:DEBUG:          | parameter             | value                                    |
+[2022-03-31 10:58:37,182]:DEBUG:          |-----------------------|------------------------------------------|
+[2022-03-31 10:58:37,182]:DEBUG:          | blockSize             | 4m                                       |
+[2022-03-31 10:58:37,182]:DEBUG:          | jube_benchmark_home   | /home/fuchs/aglippert/zhuz/.local/share/ |
+[2022-03-31 10:58:37,182]:DEBUG:          |                       | jube/examples/ior_wf                     |
+[2022-03-31 10:58:37,183]:DEBUG:          | jube_benchmark_id     | 1                                        |
+[2022-03-31 10:58:37,183]:DEBUG:          | jube_benchmark_name   | ior                                      |
+[2022-03-31 10:58:37,183]:DEBUG:          | jube_benchmark_padid  | 000001                                   |
+[2022-03-31 10:58:37,183]:DEBUG:          | jube_benchmark_rundir | /home/fuchs/aglippert/zhuz/.local/share/ |
+[2022-03-31 10:58:37,183]:DEBUG:          |                       | jube/examples/ior_wf/bench_run/000001    |
+[2022-03-31 10:58:37,183]:DEBUG:          | jube_benchmark_start  | 2022-03-31T10:58:37                      |
+[2022-03-31 10:58:37,183]:DEBUG:          | jube_step_cycles      | 1                                        |
+[2022-03-31 10:58:37,183]:DEBUG:          | jube_step_iterations  | 1                                        |
+[2022-03-31 10:58:37,183]:DEBUG:          | jube_step_name        | execute                                  |
+[2022-03-31 10:58:37,183]:DEBUG:          | jube_wp_abspath       | /home/fuchs/aglippert/zhuz/.local/share/ |
+[2022-03-31 10:58:37,183]:DEBUG:          |                       | jube/examples/ior_wf/bench_run/000001/00 |
+[2022-03-31 10:58:37,183]:DEBUG:          |                       | 0000_execute/work                        |
+[2022-03-31 10:58:37,183]:DEBUG:          | jube_wp_cycle         | 0                                        |
+[2022-03-31 10:58:37,183]:DEBUG:          | jube_wp_envlist       |                                          |
+[2022-03-31 10:58:37,183]:DEBUG:          | jube_wp_envstr        |                                          |
+[2022-03-31 10:58:37,183]:DEBUG:          | jube_wp_id            | 0                                        |
+[2022-03-31 10:58:37,183]:DEBUG:          | jube_wp_iteration     | 0                                        |
+[2022-03-31 10:58:37,183]:DEBUG:          | jube_wp_padid         | 000000                                   |
+[2022-03-31 10:58:37,183]:DEBUG:          | jube_wp_relpath       | bench_run/000001/000000_execute/work     |
+[2022-03-31 10:58:37,183]:DEBUG:          | nodes                 | 10                                       |
+[2022-03-31 10:58:37,184]:DEBUG:          | outputPath            | /scratch/fuchs/aglippert/zhuz/test80     |
+[2022-03-31 10:58:37,184]:DEBUG:          | segmentCount          | 32                                       |
+[2022-03-31 10:58:37,184]:DEBUG:          | transferSize          | 2m                                       |
+[2022-03-31 10:58:37,186]:DEBUG: >>> module load mpi/openmpi/3.1.2-gcc-8.2.0
+[2022-03-31 10:58:37,186]:DEBUG:     stdout: /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run/000001/000000_execute/work/stdout
+[2022-03-31 10:58:37,186]:DEBUG:     stderr: /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run/000001/000000_execute/work/stderr
+[2022-03-31 10:58:37,291]:DEBUG: >>> module load ior-3.3.0-gcc-4.8.5-4g27txg
+[2022-03-31 10:58:37,291]:DEBUG:     stdout: /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run/000001/000000_execute/work/stdout
+[2022-03-31 10:58:37,291]:DEBUG:     stderr: /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run/000001/000000_execute/work/stderr
+[2022-03-31 10:58:37,390]:DEBUG: >>> mpirun -n 10 ior -a mpiio -b 4m -t 2m -s 32 -F -C -e -o /scratch/fuchs/aglippert/zhuz/test80 -k -O summaryFormat=json
+[2022-03-31 10:58:37,391]:DEBUG:     stdout: /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run/000001/000000_execute/work/stdout
+[2022-03-31 10:58:37,391]:DEBUG:     stderr: /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run/000001/000000_execute/work/stderr
+[2022-03-31 10:58:39,795]:DEBUG: Create new workpackages for workpackage execute(0)
+[2022-03-31 10:58:39,795]:DEBUG:   0 new workpackages created
+[2022-03-31 10:58:39,795]:DEBUG: ----- execute ( iter:0 | id:1 | parents: | cycle:0 ) -----
+[2022-03-31 10:58:39,798]:DEBUG:   available parameter:
+[2022-03-31 10:58:39,798]:DEBUG:          | parameter             | value                                    |
+[2022-03-31 10:58:39,798]:DEBUG:          |-----------------------|------------------------------------------|
+[2022-03-31 10:58:39,798]:DEBUG:          | blockSize             | 4m                                       |
+[2022-03-31 10:58:39,799]:DEBUG:          | jube_benchmark_home   | /home/fuchs/aglippert/zhuz/.local/share/ |
+[2022-03-31 10:58:39,799]:DEBUG:          |                       | jube/examples/ior_wf                     |
+[2022-03-31 10:58:39,799]:DEBUG:          | jube_benchmark_id     | 1                                        |
+[2022-03-31 10:58:39,799]:DEBUG:          | jube_benchmark_name   | ior                                      |
+[2022-03-31 10:58:39,799]:DEBUG:          | jube_benchmark_padid  | 000001                                   |
+[2022-03-31 10:58:39,799]:DEBUG:          | jube_benchmark_rundir | /home/fuchs/aglippert/zhuz/.local/share/ |
+[2022-03-31 10:58:39,799]:DEBUG:          |                       | jube/examples/ior_wf/bench_run/000001    |
+[2022-03-31 10:58:39,799]:DEBUG:          | jube_benchmark_start  | 2022-03-31T10:58:37                      |
+[2022-03-31 10:58:39,799]:DEBUG:          | jube_step_cycles      | 1                                        |
+[2022-03-31 10:58:39,799]:DEBUG:          | jube_step_iterations  | 1                                        |
+[2022-03-31 10:58:39,799]:DEBUG:          | jube_step_name        | execute                                  |
+[2022-03-31 10:58:39,799]:DEBUG:          | jube_wp_abspath       | /home/fuchs/aglippert/zhuz/.local/share/ |
+[2022-03-31 10:58:39,799]:DEBUG:          |                       | jube/examples/ior_wf/bench_run/000001/00 |
+[2022-03-31 10:58:39,799]:DEBUG:          |                       | 0001_execute/work                        |
+[2022-03-31 10:58:39,799]:DEBUG:          | jube_wp_cycle         | 0                                        |
+[2022-03-31 10:58:39,799]:DEBUG:          | jube_wp_envlist       |                                          |
+[2022-03-31 10:58:39,799]:DEBUG:          | jube_wp_envstr        |                                          |
+[2022-03-31 10:58:39,799]:DEBUG:          | jube_wp_id            | 1                                        |
+[2022-03-31 10:58:39,799]:DEBUG:          | jube_wp_iteration     | 0                                        |
+[2022-03-31 10:58:39,799]:DEBUG:          | jube_wp_padid         | 000001                                   |
+[2022-03-31 10:58:39,800]:DEBUG:          | jube_wp_relpath       | bench_run/000001/000001_execute/work     |
+[2022-03-31 10:58:39,800]:DEBUG:          | nodes                 | 20                                       |
+[2022-03-31 10:58:39,800]:DEBUG:          | outputPath            | /scratch/fuchs/aglippert/zhuz/test80     |
+[2022-03-31 10:58:39,800]:DEBUG:          | segmentCount          | 32                                       |
+[2022-03-31 10:58:39,800]:DEBUG:          | transferSize          | 2m                                       |
+[2022-03-31 10:58:39,802]:DEBUG: >>> module load mpi/openmpi/3.1.2-gcc-8.2.0
+[2022-03-31 10:58:39,802]:DEBUG:     stdout: /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run/000001/000001_execute/work/stdout
+[2022-03-31 10:58:39,802]:DEBUG:     stderr: /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run/000001/000001_execute/work/stderr
+[2022-03-31 10:58:39,869]:DEBUG: >>> module load ior-3.3.0-gcc-4.8.5-4g27txg
+[2022-03-31 10:58:39,869]:DEBUG:     stdout: /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run/000001/000001_execute/work/stdout
+[2022-03-31 10:58:39,870]:DEBUG:     stderr: /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run/000001/000001_execute/work/stderr
+[2022-03-31 10:58:39,931]:DEBUG: >>> mpirun -n 20 ior -a mpiio -b 4m -t 2m -s 32 -F -C -e -o /scratch/fuchs/aglippert/zhuz/test80 -k -O summaryFormat=json
+[2022-03-31 10:58:39,932]:DEBUG:     stdout: /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run/000001/000001_execute/work/stdout
+[2022-03-31 10:58:39,932]:DEBUG:     stderr: /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run/000001/000001_execute/work/stderr
+[2022-03-31 10:58:42,339]:DEBUG: Create new workpackages for workpackage execute(1)
+[2022-03-31 10:58:42,339]:DEBUG:   0 new workpackages created
+[2022-03-31 10:58:42,340]:DEBUG: ----- execute ( iter:0 | id:2 | parents: | cycle:0 ) -----
+[2022-03-31 10:58:42,344]:DEBUG:   available parameter:
+[2022-03-31 10:58:42,344]:DEBUG:          | parameter             | value                                    |
+[2022-03-31 10:58:42,345]:DEBUG:          |-----------------------|------------------------------------------|
+[2022-03-31 10:58:42,345]:DEBUG:          | blockSize             | 4m                                       |
+[2022-03-31 10:58:42,345]:DEBUG:          | jube_benchmark_home   | /home/fuchs/aglippert/zhuz/.local/share/ |
+[2022-03-31 10:58:42,345]:DEBUG:          |                       | jube/examples/ior_wf                     |
+[2022-03-31 10:58:42,345]:DEBUG:          | jube_benchmark_id     | 1                                        |
+[2022-03-31 10:58:42,345]:DEBUG:          | jube_benchmark_name   | ior                                      |
+[2022-03-31 10:58:42,345]:DEBUG:          | jube_benchmark_padid  | 000001                                   |
+[2022-03-31 10:58:42,345]:DEBUG:          | jube_benchmark_rundir | /home/fuchs/aglippert/zhuz/.local/share/ |
+[2022-03-31 10:58:42,345]:DEBUG:          |                       | jube/examples/ior_wf/bench_run/000001    |
+[2022-03-31 10:58:42,345]:DEBUG:          | jube_benchmark_start  | 2022-03-31T10:58:37                      |
+[2022-03-31 10:58:42,346]:DEBUG:          | jube_step_cycles      | 1                                        |
+[2022-03-31 10:58:42,346]:DEBUG:          | jube_step_iterations  | 1                                        |
+[2022-03-31 10:58:42,346]:DEBUG:          | jube_step_name        | execute                                  |
+[2022-03-31 10:58:42,346]:DEBUG:          | jube_wp_abspath       | /home/fuchs/aglippert/zhuz/.local/share/ |
+[2022-03-31 10:58:42,346]:DEBUG:          |                       | jube/examples/ior_wf/bench_run/000001/00 |
+[2022-03-31 10:58:42,346]:DEBUG:          |                       | 0002_execute/work                        |
+[2022-03-31 10:58:42,346]:DEBUG:          | jube_wp_cycle         | 0                                        |
+[2022-03-31 10:58:42,346]:DEBUG:          | jube_wp_envlist       |                                          |
+[2022-03-31 10:58:42,346]:DEBUG:          | jube_wp_envstr        |                                          |
+[2022-03-31 10:58:42,347]:DEBUG:          | jube_wp_id            | 2                                        |
+[2022-03-31 10:58:42,347]:DEBUG:          | jube_wp_iteration     | 0                                        |
+[2022-03-31 10:58:42,347]:DEBUG:          | jube_wp_padid         | 000002                                   |
+[2022-03-31 10:58:42,347]:DEBUG:          | jube_wp_relpath       | bench_run/000001/000002_execute/work     |
+[2022-03-31 10:58:42,347]:DEBUG:          | nodes                 | 40                                       |
+[2022-03-31 10:58:42,347]:DEBUG:          | outputPath            | /scratch/fuchs/aglippert/zhuz/test80     |
+[2022-03-31 10:58:42,347]:DEBUG:          | segmentCount          | 32                                       |
+[2022-03-31 10:58:42,347]:DEBUG:          | transferSize          | 2m                                       |
+[2022-03-31 10:58:42,350]:DEBUG: >>> module load mpi/openmpi/3.1.2-gcc-8.2.0
+[2022-03-31 10:58:42,350]:DEBUG:     stdout: /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run/000001/000002_execute/work/stdout
+[2022-03-31 10:58:42,350]:DEBUG:     stderr: /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run/000001/000002_execute/work/stderr
+[2022-03-31 10:58:42,415]:DEBUG: >>> module load ior-3.3.0-gcc-4.8.5-4g27txg
+[2022-03-31 10:58:42,416]:DEBUG:     stdout: /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run/000001/000002_execute/work/stdout
+[2022-03-31 10:58:42,416]:DEBUG:     stderr: /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run/000001/000002_execute/work/stderr
+[2022-03-31 10:58:42,471]:DEBUG: >>> mpirun -n 40 ior -a mpiio -b 4m -t 2m -s 32 -F -C -e -o /scratch/fuchs/aglippert/zhuz/test80 -k -O summaryFormat=json
+[2022-03-31 10:58:42,471]:DEBUG:     stdout: /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run/000001/000002_execute/work/stdout
+[2022-03-31 10:58:42,471]:DEBUG:     stderr: /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run/000001/000002_execute/work/stderr
+[2022-03-31 10:58:47,543]:DEBUG: Create new workpackages for workpackage execute(2)
+[2022-03-31 10:58:47,544]:DEBUG:   0 new workpackages created
+[2022-03-31 10:58:47,545]:DEBUG: ----- execute ( iter:0 | id:3 | parents: | cycle:0 ) -----
+[2022-03-31 10:58:47,547]:DEBUG:   available parameter:
+[2022-03-31 10:58:47,547]:DEBUG:          | parameter             | value                                    |
+[2022-03-31 10:58:47,547]:DEBUG:          |-----------------------|------------------------------------------|
+[2022-03-31 10:58:47,548]:DEBUG:          | blockSize             | 4m                                       |
+[2022-03-31 10:58:47,548]:DEBUG:          | jube_benchmark_home   | /home/fuchs/aglippert/zhuz/.local/share/ |
+[2022-03-31 10:58:47,548]:DEBUG:          |                       | jube/examples/ior_wf                     |
+[2022-03-31 10:58:47,548]:DEBUG:          | jube_benchmark_id     | 1                                        |
+[2022-03-31 10:58:47,548]:DEBUG:          | jube_benchmark_name   | ior                                      |
+[2022-03-31 10:58:47,548]:DEBUG:          | jube_benchmark_padid  | 000001                                   |
+[2022-03-31 10:58:47,548]:DEBUG:          | jube_benchmark_rundir | /home/fuchs/aglippert/zhuz/.local/share/ |
+[2022-03-31 10:58:47,548]:DEBUG:          |                       | jube/examples/ior_wf/bench_run/000001    |
+[2022-03-31 10:58:47,548]:DEBUG:          | jube_benchmark_start  | 2022-03-31T10:58:37                      |
+[2022-03-31 10:58:47,548]:DEBUG:          | jube_step_cycles      | 1                                        |
+[2022-03-31 10:58:47,548]:DEBUG:          | jube_step_iterations  | 1                                        |
+[2022-03-31 10:58:47,548]:DEBUG:          | jube_step_name        | execute                                  |
+[2022-03-31 10:58:47,548]:DEBUG:          | jube_wp_abspath       | /home/fuchs/aglippert/zhuz/.local/share/ |
+[2022-03-31 10:58:47,548]:DEBUG:          |                       | jube/examples/ior_wf/bench_run/000001/00 |
+[2022-03-31 10:58:47,548]:DEBUG:          |                       | 0003_execute/work                        |
+[2022-03-31 10:58:47,548]:DEBUG:          | jube_wp_cycle         | 0                                        |
+[2022-03-31 10:58:47,548]:DEBUG:          | jube_wp_envlist       |                                          |
+[2022-03-31 10:58:47,548]:DEBUG:          | jube_wp_envstr        |                                          |
+[2022-03-31 10:58:47,548]:DEBUG:          | jube_wp_id            | 3                                        |
+[2022-03-31 10:58:47,549]:DEBUG:          | jube_wp_iteration     | 0                                        |
+[2022-03-31 10:58:47,549]:DEBUG:          | jube_wp_padid         | 000003                                   |
+[2022-03-31 10:58:47,549]:DEBUG:          | jube_wp_relpath       | bench_run/000001/000003_execute/work     |
+[2022-03-31 10:58:47,549]:DEBUG:          | nodes                 | 80                                       |
+[2022-03-31 10:58:47,549]:DEBUG:          | outputPath            | /scratch/fuchs/aglippert/zhuz/test80     |
+[2022-03-31 10:58:47,549]:DEBUG:          | segmentCount          | 32                                       |
+[2022-03-31 10:58:47,549]:DEBUG:          | transferSize          | 2m                                       |
+[2022-03-31 10:58:47,551]:DEBUG: >>> module load mpi/openmpi/3.1.2-gcc-8.2.0
+[2022-03-31 10:58:47,551]:DEBUG:     stdout: /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run/000001/000003_execute/work/stdout
+[2022-03-31 10:58:47,551]:DEBUG:     stderr: /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run/000001/000003_execute/work/stderr
+[2022-03-31 10:58:47,595]:DEBUG: >>> module load ior-3.3.0-gcc-4.8.5-4g27txg
+[2022-03-31 10:58:47,595]:DEBUG:     stdout: /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run/000001/000003_execute/work/stdout
+[2022-03-31 10:58:47,595]:DEBUG:     stderr: /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run/000001/000003_execute/work/stderr
+[2022-03-31 10:58:47,635]:DEBUG: >>> mpirun -n 80 ior -a mpiio -b 4m -t 2m -s 32 -F -C -e -o /scratch/fuchs/aglippert/zhuz/test80 -k -O summaryFormat=json
+[2022-03-31 10:58:47,635]:DEBUG:     stdout: /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run/000001/000003_execute/work/stdout
+[2022-03-31 10:58:47,635]:DEBUG:     stderr: /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run/000001/000003_execute/work/stderr
+[2022-03-31 10:58:52,725]:DEBUG: Create new workpackages for workpackage execute(3)
+[2022-03-31 10:58:52,725]:DEBUG:   0 new workpackages created
+[2022-03-31 10:58:52,738]:INFO:   | stepname | all | open | wait | error | done |
+[2022-03-31 10:58:52,738]:INFO:   |----------|-----|------|------|-------|------|
+[2022-03-31 10:58:52,738]:INFO:   |  execute |   4 |    0 |    0 |     0 |    4 |
+[2022-03-31 10:58:52,738]:INFO: 
+[2022-03-31 10:58:52,739]:INFO: >>>> Benchmark information and further useful commands:
+[2022-03-31 10:58:52,739]:INFO: >>>>       id: 1
+[2022-03-31 10:58:52,739]:INFO: >>>>   handle: /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run
+[2022-03-31 10:58:52,739]:INFO: >>>>      dir: /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run/000001
+[2022-03-31 10:58:52,739]:INFO: >>>>  analyse: jube analyse /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run --id 1
+[2022-03-31 10:58:52,739]:INFO: >>>>   result: jube result /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run --id 1
+[2022-03-31 10:58:52,739]:INFO: >>>>     info: jube info /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run --id 1
+[2022-03-31 10:58:52,739]:INFO: >>>>      log: jube log /home/fuchs/aglippert/zhuz/.local/share/jube/examples/ior_wf/bench_run --id 1
+[2022-03-31 10:58:52,739]:INFO: ######################################################################
