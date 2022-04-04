@@ -2,6 +2,7 @@ import sys
 import os
 import json
 import argparse
+import darshan
 from ior_model_builder import Builder, PerformanceModel, Summary, Beegfs, FilesystemModel
 import sqlite3
 from sqlite3 import Error
@@ -185,7 +186,18 @@ def get_beegfs_settings():
 
 def startup(flag, con, mod):
     if flag:
-        parser = argparse.ArgumentParser(description='file system')
+        report = darshan.DarshanReport('darshan_log/zhuz_ior_id40360-40360_3-13-54672-13184412277053247260_14.darshan', read_all=False)
+        report.mod_read_all_records('POSIX')
+        report.mod_read_all_records('MPI-IO')
+        # or fetch all
+        # report.read_all_generic_records()
+
+        # Generate summaries for currently loaded data
+        # Note: aggregations are still experimental and have to be activated:
+        darshan.enable_experimental()
+        report.summarize()
+        """
+             parser = argparse.ArgumentParser(description='file system')
         parser.add_argument('-j', type=str,
                             help='Path to IOR json output')
         args = parser.parse_args()
@@ -199,6 +211,7 @@ def startup(flag, con, mod):
         else:
             generate_tables(con)
             insert_performance(con, pm)
+        """
     else:
         if 0:
             delete_tables(con)
@@ -225,7 +238,6 @@ def startup(flag, con, mod):
                             insert_performance(con, pm)
 
 
-
 if __name__ == '__main__':
     con = create_connection(r"pythonsqlite.db")
-    startup(0, con, "cluster")
+    startup(1, con, "cluster")
