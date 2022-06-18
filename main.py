@@ -3,17 +3,65 @@ import os
 import json
 import argparse
 import darshan
-from ior_model_builder import Builder, PerformanceModel, Summary, Beegfs, FilesystemModel
+
+from ior_model_builder import Builder, PerformanceModel, Summary, Beegfs, FilesystemModel, IO500, Run, Testcase, Score
+from ior_options_model import I0500OptionsModel, IO500ResultsModel
+from sysinfo import *
+
 import sqlite3
 from sqlite3 import Error
+import itertools as it
 
 sys.path.append(".")
+
+
+def dict_factory(cursor, row):
+    d = {}
+    for idx, col in enumerate(cursor.description):
+        d[col[0]] = row[idx]
+    return d
+
+
+# connect to the SQlite databases
+def openConnection(pathToSqliteDb):
+    connection = sqlite3.connect(pathToSqliteDb)
+    connection.row_factory = dict_factory
+    cursor = connection.cursor()
+    return connection, cursor
+
+
+def getAllRecordsInTable(table_name, pathToSqliteDb):
+    conn, curs = openConnection(pathToSqliteDb)
+    conn.row_factory = dict_factory
+    curs.execute("SELECT * FROM '{}' ".format(table_name))
+    # fetchall as result
+    results = curs.fetchall()
+    # close connection
+    conn.close()
+    return json.dumps(results)
+
+
+def sqliteToJson(pathToSqliteDb):
+    connection, cursor = openConnection(pathToSqliteDb)
+    # select all the tables from the database
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+    tables = cursor.fetchall()
+    # for each of the tables , select all the records from the table
+    for table_name in tables:
+        # Get the records in table
+        results = getAllRecordsInTable(table_name['name'], pathToSqliteDb)
+
+        # generate and save JSON files with the table name for each of the database tables and save in results folder
+        with open('./json_results/' + table_name['name'] + '.json', 'w') as the_file:
+            the_file.write(results)
+    # close connection
+    connection.close()
 
 
 def read_log(path, fs):
     with open(path) as json_file:
         json_dictionary = json.loads(json_file.read())
-        pm = Builder.create_from_json(json_dictionary,fs)
+        pm = Builder.create_from_json(json_dictionary, fs)
         return pm
 
 
@@ -25,6 +73,113 @@ def create_connection(db_file):
     except Error as e:
         print(f"The error '{e}' occurred")
     return connection
+
+
+def read_io500():
+    ts, te = "", ""
+    run = Run.__new__(Run)
+    score = Score.__new__(Score)
+    testcases = []
+    with open("2022.06.16-13.32.58/result.txt", "r") as f:
+        lines = f.readlines()
+        for i in range(0, len(lines)):
+            line = lines[i].rstrip()
+            if line == '[run]':
+                run.__init__(lines[i + 1].rstrip().split('=',1)[1], lines[i + 2].rstrip().split('=')[1],
+                             lines[i + 3].rstrip().split('=',1)[1],
+                             lines[i + 4].rstrip().split('=',1)[1], lines[i + 5].rstrip().split('=')[1])
+            elif line.startswith('[mdtest') or line.startswith('[ior'):
+                if line.startswith('[ior'):
+                    if line.find("write") != -1:
+                        o, r = get_options_results(line.strip("[]\n"), 1)
+                    else:
+                        o, r = get_options_results(line.strip("[]\n"), 0)
+                    # print(lines[i + 2].rstrip().split('='))
+                    tc = Testcase(line.strip("[]\n"),
+                                  lines[i + 1].rstrip().split('=',1)[1],
+                                  lines[i + 2].rstrip().split('=',1)[1],
+                                  lines[i + 3].rstrip().split('=',1)[1],
+                                  lines[i + 4].rstrip().split('=',1)[1],
+                                  lines[i + 5].rstrip().split('=',1)[1], o,r)
+                    testcases.append(tc)
+                else:
+                    tc = Testcase(line.strip("[]\n"),
+                                  lines[i + 1].rstrip().split('=',1)[1],
+                                  lines[i + 2].rstrip().split('=',1)[1],
+                                  lines[i + 3].rstrip().split('=',1)[1],
+                                  lines[i + 4].rstrip().split('=',1)[1],
+                                  lines[i + 5].rstrip().split('=',1)[1])
+                    testcases.append(tc)
+
+            elif line.startswith('[find'):
+                pass
+            elif line.startswith('[SCO'):
+                score.__init__(lines[i + 1].rstrip().split('=',1)[1],
+                               lines[i + 2].rstrip().split('=',1)[1],
+                               lines[i + 3].rstrip().split('=',1)[1],
+                               lines[i + 4].rstrip().split('=',1)[1])
+            elif line.startswith('; START'):
+                ts = line.split('T ')[1]
+            elif line.startswith('; END'):
+                te= line.split('D ')[1]
+        return IO500(run,testcases,score,ts, te)
+
+
+def get_options_results(testcase, isWrite):
+    options = I0500OptionsModel.__new__(I0500OptionsModel)
+    result = IO500ResultsModel.__new__(IO500ResultsModel)
+    path = "2022.06.16-13.32.58/" + testcase + ".txt"
+    print(path)
+    with open(path, "r") as f:
+        lines = f.readlines()
+        for i in range(0, len(lines)):
+            line = lines[i].rstrip()
+            if line.startswith('Options'):
+                if isWrite:
+                    options.__init__(lines[i + 1].rstrip().split(':',1)[1],
+                                  lines[i + 2].rstrip().split(':',1)[1],
+                                  lines[i + 3].rstrip().split(':',1)[1],
+                                  lines[i + 4].rstrip().split(':',1)[1],
+                                  lines[i + 5].rstrip().split(':',1)[1],
+                                     lines[i + 6].rstrip().split(':',1)[1],
+                                     lines[i + 7].rstrip().split(':',1)[1],
+                                     lines[i + 8].rstrip().split(':',1)[1],
+                                     lines[i + 9].rstrip().split(':',1)[1],
+                                     lines[i + 10].rstrip().split(':',1)[1],
+                                     lines[i + 11].rstrip().split(':',1)[1],
+                                     lines[i + 12].rstrip().split(':',1)[1],
+                                     lines[i + 13].rstrip().split(':',1)[1],
+                                     lines[i + 14].rstrip().split(':',1)[1],
+                                     lines[i + 15].rstrip().split(':',1)[1],
+                                     lines[i + 16].rstrip().split(':',1)[1],
+                                     lines[i + 17].rstrip().split(':',1)[1],
+                                     lines[i + 18].rstrip().split(':',1)[1]
+                                     )
+                else:
+                    options.__init__(lines[i + 1].rstrip().split(':',1)[1],
+                                  lines[i + 2].rstrip().split(':',1)[1],
+                                  lines[i + 3].rstrip().split(':',1)[1],
+                                  lines[i + 4].rstrip().split(':',1)[1],
+                                  lines[i + 5].rstrip().split(':',1)[1],
+                                     lines[i + 6].rstrip().split(':',1)[1],
+                                     lines[i + 7].rstrip().split(':',1)[1],
+                                     lines[i + 8].rstrip().split(':',1)[1],
+                                     lines[i + 9].rstrip().split(':',1)[1],
+                                     lines[i + 10].rstrip().split(':',1)[1],
+                                     lines[i + 11].rstrip().split(':',1)[1],
+                                     lines[i + 12].rstrip().split(':',1)[1],
+                                     lines[i + 13].rstrip().split(':',1)[1],
+                                     lines[i + 14].rstrip().split(':',1)[1],
+                                     lines[i + 15].rstrip().split(':',1)[1],
+                                     lines[i + 16].rstrip().split(':',1)[1]
+                                     )
+            elif line.startswith("Results"):
+                for j in range(len(lines) - i):
+                    if lines[i+j].startswith('write') or lines[i+j].startswith('read'):
+                        r= lines[i+j].split()
+                        print(lines[i+j].split())
+                        result.__init__(r[0],r[1],r[2],r[3],r[4],r[5],r[6],r[7],r[8],r[9],r[10])
+    return options, result
 
 
 def test_output():
@@ -57,7 +212,7 @@ def generate_tables(con):
                                           "randomOffset INTEGER, checkWrite INTEGER, checkRead INTEGER, preallocate INTEGER, useFileView INTEGER, setAlignment INTEGER, " \
                                           "storeFileOffset INTEGER, useSharedFilePointer INTEGER, useStridedDatatype INTEGER, keepFile INTEGER, keepFileWithError INTEGER," \
                                           "verbose INTEGER,collective INTEGER,segmentCount INTEGER,transferSize INTEGER,blockSize INTEGER, warningAsErrors INTEGER);"
-                #print(sql_create_performances)
+                # print(sql_create_performances)
                 con.cursor().execute(sql_create_performances)
             elif name == "summaries":
                 sql_create_summaries = "CREATE TABLE summaries ( id INTEGER PRIMARY KEY AUTOINCREMENT, performance_id INTEGER NOT NULL,  operation TEXT, API TEXT, TestID INTEGER, ReferenceNumber INTEGER, " \
@@ -72,8 +227,8 @@ def generate_tables(con):
                 con.cursor().execute(sql_create_results)
             elif name == "filesystems":
                 sql_create_filesystems = "CREATE TABLE filesystems ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, performance_id INTEGER NOT NULL, type TEXT, " \
-                                     "settings REAL, " \
-                                     "CONSTRAINT results_FK FOREIGN KEY (performance_id) REFERENCES performances(id));"
+                                         "settings REAL, " \
+                                         "CONSTRAINT results_FK FOREIGN KEY (performance_id) REFERENCES performances(id));"
                 con.cursor().execute(sql_create_filesystems)
 
 
@@ -99,7 +254,7 @@ def insert_performance(con, pm):
          reorderTasks, reorderTasksRandom, reorderTasksRandomSeed, randomOffset, checkWrite, checkRead, preallocate, useFileView, setAlignment, storeFileOffset, useSharedFilePointer, useStridedDatatype,
           keepFile, keepFileWithError, verbose, collective, 
           segmentCount, transferSize, blockSize, warningAsErrors) VALUES(?, ?,?,?,? ,?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);'''
-    #print(sql_insert_performance)
+    # print(sql_insert_performance)
     cursor = con.cursor()
     cursor.execute(sql_insert_performance,
                    (pm.cmd, pm.ts, pm.te, pm.parameters.testID, pm.parameters.refnum, pm.parameters.api
@@ -174,44 +329,34 @@ def get_fs_settings():
     return fs
 
 
+def get_darshan():
+    report = darshan.DarshanReport('darshan_log/zhuz_ior_id40360-40360_3-13-54672-13184412277053247260_14.darshan',
+                                   read_all=False)
+    report.mod_read_all_records('POSIX')
+    report.mod_read_all_records('MPI-IO')
+    # or fetch all
+    # report.read_all_generic_records()
+
+    # Generate summaries for currently loaded data
+    # Note: aggregations are still experimental and have to be activated:
+    darshan.enable_experimental()
+    report.summarize()
+
+
 def get_beegfs_settings():
     settings = []
     with os.popen('beegfs-ctl --getentryinfo .') as stream:
         for i, line in enumerate(stream):
             if len(line.split(': ', 1)) > 1:
                 settings.append(line.split(': ', 1)[1])
-    print(settings[0],'\n',settings[1], '\n', settings[2], settings[3], settings[4], settings[5])
+    print(settings[0], '\n', settings[1], '\n', settings[2], settings[3], settings[4], settings[5])
     return Beegfs(settings[0], settings[1], settings[2], settings[3], settings[4], settings[5])
 
 
 def startup(flag, con, mod):
     if flag:
-        report = darshan.DarshanReport('darshan_log/zhuz_ior_id40360-40360_3-13-54672-13184412277053247260_14.darshan', read_all=False)
-        report.mod_read_all_records('POSIX')
-        report.mod_read_all_records('MPI-IO')
-        # or fetch all
-        # report.read_all_generic_records()
-
-        # Generate summaries for currently loaded data
-        # Note: aggregations are still experimental and have to be activated:
-        darshan.enable_experimental()
-        report.summarize()
-        """
-             parser = argparse.ArgumentParser(description='file system')
-        parser.add_argument('-j', type=str,
-                            help='Path to IOR json output')
-        args = parser.parse_args()
-        print(args.j)
-        if args.j is not None:
-            pm = read_log(args.j)
-        else:
-            pm = read_log('ior_sample_i4.json')
-        if 0:
-            delete_tables(con)
-        else:
-            generate_tables(con)
-            insert_performance(con, pm)
-        """
+        get_sys_info()
+        my = read_io500()
     else:
         if 0:
             delete_tables(con)
@@ -241,3 +386,5 @@ def startup(flag, con, mod):
 if __name__ == '__main__':
     con = create_connection(r"pythonsqlite.db")
     startup(1, con, "cluster")
+    # pathToSqliteDb = 'pythonsqlite.db'
+    # sqliteToJson(pathToSqliteDb)

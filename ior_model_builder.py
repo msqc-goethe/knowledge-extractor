@@ -197,3 +197,37 @@ class Beegfs:
         self.StripePatternType = StripePatternType
         self.StripePatternChunkSize = StripePatternChunkSize
         self.StripePatternStoragePool = StripePatternStoragePool
+
+class Testcase:
+    def __init__(self, name, t_start, exe, score, t_delta, t_end, opt=-1, results=-1):
+        self.name = name
+        self.t_start = t_start
+        self.exe = exe
+        self.score = score
+        self.t_delta = t_delta
+        self.t_end = t_end
+        self.options = opt
+        self.results = results
+
+class Score:
+    def __init__(self, MD, BW, score, hash):
+        self.MD = MD
+        self.BW = BW
+        self.SCORE = score
+        self.hash = hash
+
+class Run:
+    def __init__(self, procs, version, config_hash, result_dir, mode):
+        self.procs = procs
+        self.version = version
+        self.config_hash = config_hash
+        self.result_dir = result_dir
+        self.mode = mode
+
+class IO500:
+    def __init__(self, run, testcases, score, start, end):
+        self.run = run
+        self.testcases = testcases
+        self.score = score
+        self.start = start
+        self.end = end
