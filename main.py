@@ -86,8 +86,7 @@ def read_io500():
             line = lines[i].rstrip()
             if line == '[run]':
                 run.__init__(lines[i + 1].rstrip().split('=',1)[1], lines[i + 2].rstrip().split('=')[1],
-                             lines[i + 3].rstrip().split('=',1)[1],
-                             lines[i + 4].rstrip().split('=',1)[1], lines[i + 5].rstrip().split('=')[1])
+                             lines[i + 3].rstrip().split('=',1)[1], lines[i + 4].rstrip().split('=',1)[1], lines[i + 5].rstrip().split('=')[1])
             elif line.startswith('[mdtest') or line.startswith('[ior'):
                 if line.startswith('[ior'):
                     if line.find("write") != -1:
@@ -196,7 +195,7 @@ def test_output():
 
 def generate_tables(con):
     cur = con.cursor()
-    tns = ["performances", "summaries", "results", "filesystems"]
+    tns = ["performances", "summaries", "results", "filesystems", "sysinfos", "IOFHs", "IOFHsRuns","IOFHsScores", "IOFHsTestcases","IOFHsOptions", "IOFHsResults"]
     for name in tns:
         sql = "SELECT name FROM sqlite_master WHERE type=\"table\" AND name=(?)"
         # print(sql, name)
@@ -228,8 +227,43 @@ def generate_tables(con):
             elif name == "filesystems":
                 sql_create_filesystems = "CREATE TABLE filesystems ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, performance_id INTEGER NOT NULL, type TEXT, " \
                                          "settings REAL, " \
-                                         "CONSTRAINT results_FK FOREIGN KEY (performance_id) REFERENCES performances(id));"
+                                         "CONSTRAINT filesystems_FK FOREIGN KEY (performance_id) REFERENCES performances(id));"
                 con.cursor().execute(sql_create_filesystems)
+
+
+            elif name == "sysinfos":
+                sql_create_sysinfos = "CREATE TABLE sysinfos ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, IOFH_id INTEGER NOT NULL, name TEXT, " \
+                                         "kernel_version TEXT,processor_architecture TEXT,processor_model TEXT,processor_frequency REAL,processor_threads INTEGER,processor_vendor TEXT," \
+                                         "processor_L2 INTEGER,processor_L3 INTEGER, processor_coresPerSocket INTEGER " \
+                                      ",distribution TEXT ,distribution_version TEXT ,memory_capacity INTEGER, CONSTRAINT sysinfos_FK FOREIGN KEY (IOFH_id) REFERENCES IOFHs(id));"
+                con.cursor().execute(sql_create_sysinfos)
+            elif name == "IOFHs":
+                sql_create_IOFHs = "CREATE TABLE IOFHs ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, start TEXT, end TEXT);"
+                con.cursor().execute(sql_create_IOFHs)
+            elif name == "IOFHsRuns":
+                sql_create_IOFHsRuns = "CREATE TABLE IOFHsRuns ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, IOFH_id INTEGER NOT NULL, procs INTEGER NOT NULL, version TEXT, " \
+                                         "config_hash TEXT, result_dir TEXT, mode TEXT," \
+                                         "CONSTRAINT IOFHsRuns_FK FOREIGN KEY (IOFH_id) REFERENCES IOFHs(id));"
+                con.cursor().execute(sql_create_IOFHsRuns)
+            elif name == "IOFHsScores":
+                sql_create_IOFHsScores = "CREATE TABLE IOFHsScores ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, IOFH_id INTEGER NOT NULL, MD REAL, BW REAL, " \
+                                       "SCORE REAL, CONSTRAINT IOFHsScores_FK FOREIGN KEY (IOFH_id) REFERENCES IOFHs(id));"
+                con.cursor().execute(sql_create_IOFHsScores)
+            elif name == "IOFHsTestcases":
+                sql_create_IOFHsTestcases = "CREATE TABLE IOFHsTestcases ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, IOFHsRun_id INTEGER NOT NULL, name TEXT, t_start TEXT, " \
+                                       "exe TEXT, score REAL, t_delta REAL, t_end TEXT, CONSTRAINT IOFHsTestcases_FK FOREIGN KEY (IOFHsRun_id) REFERENCES IOFHsRuns(id));"
+                con.cursor().execute(sql_create_IOFHsTestcases)
+            elif name == "IOFHsOptions":
+                sql_create_IOFHsOptions = "CREATE TABLE IOFHsOptions ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, IOFHsTestcase_id INTEGER NOT NULL, api TEXT, apiVersion TEXT, " \
+                                       "testFileName TEXT, access TEXT, type TEXT, segments INTEGER ,orderingInaFile TEXT, orderingInterFile TEXT, taskOffset INTEGER , nodes INTEGER " \
+                                          ",tasks INTEGER , clientsPerNode INTEGER , repetitions INTEGER , xfersize REAL, blocksize REAL, aggregateFilesize REAL, stonewallingTime INTEGER " \
+                                          ", stoneWallingWearOut INTEGER, CONSTRAINT IOFHsOptions_FK FOREIGN KEY (IOFHsTestcase_id) REFERENCES IOFHsTestcases(id));"
+                con.cursor().execute(sql_create_IOFHsOptions)
+            elif name == "IOFHsResults":
+                sql_create_IOFHsResults = "CREATE TABLE IOFHsResults ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, IOFHsTestcase_id INTEGER NOT NULL, access TEXT, bwMiB REAL, " \
+                                       "iops REAL, latency REAL, blockKiB REAL, xferKiB REAL ,openTime REAL, wrRdTime REAL, closeTime REAL , totalTime REAL " \
+                                          ",iter INTEGER, CONSTRAINT IOFHsOptions_FK FOREIGN KEY (IOFHsTestcase_id) REFERENCES IOFHsTestcases(id));"
+                con.cursor().execute(sql_create_IOFHsResults)
 
 
 def delete_tables(con):
@@ -237,6 +271,15 @@ def delete_tables(con):
     print(con.cursor().execute("DROP TABLE summaries"))
     print(con.cursor().execute("DROP TABLE results"))
     print(con.cursor().execute("DROP TABLE filesystems"))
+
+    print(con.cursor().execute("DROP TABLE IOFHsResults"))
+    print(con.cursor().execute("DROP TABLE IOFHsOptions"))
+    print(con.cursor().execute("DROP TABLE IOFHsTestcases"))
+    print(con.cursor().execute("DROP TABLE IOFHsScores"))
+    print(con.cursor().execute("DROP TABLE IOFHsRuns"))
+    print(con.cursor().execute("DROP TABLE IOFHs"))
+    print(con.cursor().execute("DROP TABLE sysinfos"))
+
 
 
 def insert_filesystem(con, pm):
@@ -357,6 +400,7 @@ def startup(flag, con, mod):
     if flag:
         get_sys_info()
         my = read_io500()
+        generate_tables(con)
     else:
         if 0:
             delete_tables(con)
