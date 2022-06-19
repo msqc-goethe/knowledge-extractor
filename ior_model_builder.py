@@ -199,13 +199,14 @@ class Beegfs:
         self.StripePatternStoragePool = StripePatternStoragePool
 
 class Testcase:
-    def __init__(self, name, t_start, exe, score, t_delta, t_end, opt=-1, results=-1):
+    def __init__(self, name, t_start, exe, score, t_delta, t_end, stonewall =-1, opt=-1, results=-1):
         self.name = name
         self.t_start = t_start
         self.exe = exe
         self.score = score
         self.t_delta = t_delta
         self.t_end = t_end
+        self.stonewall = stonewall
         self.options = opt
         self.results = results
 
@@ -225,9 +226,10 @@ class Run:
         self.mode = mode
 
 class IO500:
-    def __init__(self, run, testcases, score, start, end):
+    def __init__(self, run, testcases, score, start, end, sysinfo):
         self.run = run
         self.testcases = testcases
         self.score = score
         self.start = start
         self.end = end
+        self.sysinfo = sysinfo

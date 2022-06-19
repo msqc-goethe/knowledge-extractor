@@ -4,13 +4,12 @@ import json
 import argparse
 import darshan
 
-from ior_model_builder import Builder, PerformanceModel, Summary, Beegfs, FilesystemModel, IO500, Run, Testcase, Score
+from ior_model_builder import Builder, Beegfs, FilesystemModel, IO500, Run, Testcase, Score
 from ior_options_model import I0500OptionsModel, IO500ResultsModel
 from sysinfo import *
 
 import sqlite3
 from sqlite3 import Error
-import itertools as it
 
 sys.path.append(".")
 
@@ -75,12 +74,13 @@ def create_connection(db_file):
     return connection
 
 
-def read_io500():
+def read_io500(path = "2022.06.16-13.32.58/"):
     ts, te = "", ""
     run = Run.__new__(Run)
     score = Score.__new__(Score)
     testcases = []
-    with open("2022.06.16-13.32.58/result.txt", "r") as f:
+    rPath = path + "result.txt"
+    with open(rPath, "r") as f:
         lines = f.readlines()
         for i in range(0, len(lines)):
             line = lines[i].rstrip()
@@ -90,25 +90,44 @@ def read_io500():
             elif line.startswith('[mdtest') or line.startswith('[ior'):
                 if line.startswith('[ior'):
                     if line.find("write") != -1:
-                        o, r = get_options_results(line.strip("[]\n"), 1)
+                        o, r = get_options_results(line.strip("[]\n"), 1, path)
+                        tc = Testcase(line.strip("[]\n"),
+                                      lines[i + 1].rstrip().split('=', 1)[1],
+                                      lines[i + 2].rstrip().split('=', 1)[1],
+                                      lines[i + 4].rstrip().split('=', 1)[1],
+                                      lines[i + 5].rstrip().split('=', 1)[1],
+                                      lines[i + 6].rstrip().split('=', 1)[1],
+                                      lines[i + 3].rstrip().split('=', 1)[1], o, r)
+                        testcases.append(tc)
                     else:
-                        o, r = get_options_results(line.strip("[]\n"), 0)
-                    # print(lines[i + 2].rstrip().split('='))
-                    tc = Testcase(line.strip("[]\n"),
-                                  lines[i + 1].rstrip().split('=',1)[1],
-                                  lines[i + 2].rstrip().split('=',1)[1],
-                                  lines[i + 3].rstrip().split('=',1)[1],
-                                  lines[i + 4].rstrip().split('=',1)[1],
-                                  lines[i + 5].rstrip().split('=',1)[1], o,r)
-                    testcases.append(tc)
+                        o, r = get_options_results(line.strip("[]\n"), 0, path)
+                        tc = Testcase(line.strip("[]\n"),
+                                      lines[i + 1].rstrip().split('=',1)[1],
+                                      lines[i + 2].rstrip().split('=',1)[1],
+                                      lines[i + 3].rstrip().split('=',1)[1],
+                                      lines[i + 4].rstrip().split('=',1)[1],
+                                      lines[i + 5].rstrip().split('=',1)[1],
+                                      -1,o,r)
+                        testcases.append(tc)
                 else:
-                    tc = Testcase(line.strip("[]\n"),
-                                  lines[i + 1].rstrip().split('=',1)[1],
-                                  lines[i + 2].rstrip().split('=',1)[1],
-                                  lines[i + 3].rstrip().split('=',1)[1],
-                                  lines[i + 4].rstrip().split('=',1)[1],
-                                  lines[i + 5].rstrip().split('=',1)[1])
-                    testcases.append(tc)
+                    if line.find("write") != -1:
+                        tc = Testcase(line.strip("[]\n"),
+                                      lines[i + 1].rstrip().split('=',1)[1],
+                                      lines[i + 2].rstrip().split('=',1)[1],
+                                      lines[i + 4].rstrip().split('=',1)[1],
+                                      lines[i + 5].rstrip().split('=',1)[1],
+                                      lines[i + 6].rstrip().split('=',1)[1],
+                                      lines[i + 3].rstrip().split('=',1)[1])
+                        testcases.append(tc)
+                    else:
+                        tc = Testcase(line.strip("[]\n"),
+                                      lines[i + 1].rstrip().split('=',1)[1],
+                                      lines[i + 2].rstrip().split('=',1)[1],
+                                      lines[i + 3].rstrip().split('=',1)[1],
+                                      lines[i + 4].rstrip().split('=',1)[1],
+                                      lines[i + 5].rstrip().split('=',1)[1],
+                                      -1)
+                        testcases.append(tc)
 
             elif line.startswith('[find'):
                 pass
@@ -121,13 +140,14 @@ def read_io500():
                 ts = line.split('T ')[1]
             elif line.startswith('; END'):
                 te= line.split('D ')[1]
-        return IO500(run,testcases,score,ts, te)
+
+        return IO500(run,testcases,score,ts, te, get_sys_info())
 
 
-def get_options_results(testcase, isWrite):
+def get_options_results(testcase, isWrite, folderPath = "2022.06.16-13.32.58/"):
     options = I0500OptionsModel.__new__(I0500OptionsModel)
     result = IO500ResultsModel.__new__(IO500ResultsModel)
-    path = "2022.06.16-13.32.58/" + testcase + ".txt"
+    path = folderPath + testcase + ".txt"
     print(path)
     with open(path, "r") as f:
         lines = f.readlines()
@@ -251,7 +271,7 @@ def generate_tables(con):
                 con.cursor().execute(sql_create_IOFHsScores)
             elif name == "IOFHsTestcases":
                 sql_create_IOFHsTestcases = "CREATE TABLE IOFHsTestcases ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, IOFHsRun_id INTEGER NOT NULL, name TEXT, t_start TEXT, " \
-                                       "exe TEXT, score REAL, t_delta REAL, t_end TEXT, CONSTRAINT IOFHsTestcases_FK FOREIGN KEY (IOFHsRun_id) REFERENCES IOFHsRuns(id));"
+                                       "exe TEXT, stonewall REAL, score REAL, t_delta REAL, t_end TEXT, CONSTRAINT IOFHsTestcases_FK FOREIGN KEY (IOFHsRun_id) REFERENCES IOFHsRuns(id));"
                 con.cursor().execute(sql_create_IOFHsTestcases)
             elif name == "IOFHsOptions":
                 sql_create_IOFHsOptions = "CREATE TABLE IOFHsOptions ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, IOFHsTestcase_id INTEGER NOT NULL, api TEXT, apiVersion TEXT, " \
@@ -280,6 +300,80 @@ def delete_tables(con):
     print(con.cursor().execute("DROP TABLE IOFHs"))
     print(con.cursor().execute("DROP TABLE sysinfos"))
 
+
+
+def insert_IOFHs(con, iof):
+    sql_insert_result = '''INSERT INTO IOFHs ("start", "end") VALUES(?, ?);'''
+    cursor = con.cursor()
+    cursor.execute(sql_insert_result, (iof.start, iof.end))
+    con.commit()
+    if cursor.lastrowid > 0:
+        iofid = cursor.lastrowid
+        insert_IOFHsRuns(con, iofid, iof)
+        insert_IOFHsScores(con, iofid, iof)
+        insert_sysinfos(con,iofid,iof)
+        return 1
+
+
+def insert_sysinfos(con, iofid, iof):
+    sql_insert_result = '''INSERT INTO sysinfos (IOFH_id, name, kernel_version, processor_architecture, processor_model, processor_frequency, 
+    processor_threads, processor_vendor, processor_L2, processor_L3, processor_coresPerSocket, distribution, distribution_version, memory_capacity) VALUES(
+    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);'''
+    cursor = con.cursor()
+    cursor.execute(sql_insert_result, (iofid, iof.sysinfo.name, iof.sysinfo.kernel_version, iof.sysinfo.processor_architecture, iof.sysinfo.processor_model,
+                                       iof.sysinfo.processor_frequency, iof.sysinfo.processor_threads, iof.sysinfo.processor_vendor, iof.sysinfo.processor_L2,
+                                       iof.sysinfo.processor_L3, iof.sysinfo.processor_coresPerSocket, iof.sysinfo.distribution, iof.sysinfo.distribution_version, iof.sysinfo.memory_capacity))
+    con.commit()
+
+
+def insert_IOFHsRuns(con, iofid, iof):
+    sql_insert_result = '''INSERT INTO IOFHsRuns (IOFH_id, procs, version, config_hash, result_dir, mode) VALUES(?, ?, ?, ?, ?, ?);'''
+    cursor = con.cursor()
+    cursor.execute(sql_insert_result, (iofid, iof.run.procs, iof.run.version, iof.run.config_hash, iof.run.result_dir, iof.run.mode))
+    con.commit()
+    if cursor.lastrowid > 0:
+        iofrid = cursor.lastrowid
+        insert_IOFHsTestcases(con, iofrid, iof)
+        return 1
+
+
+def insert_IOFHsScores(con, iofid, iof):
+    sql_insert_result = '''INSERT INTO IOFHsScores (IOFH_id, MD, BW, SCORE) VALUES(?,?,?,?);'''
+    cursor = con.cursor()
+    cursor.execute(sql_insert_result, (iofid, iof.score.MD, iof.score.BW, iof.score.SCORE))
+    con.commit()
+
+
+def insert_IOFHsTestcases(con, iofrid, iof):
+    for testcase in iof.testcases:
+        sql_insert_result = '''INSERT INTO IOFHsTestcases (IOFHsRun_id, name, t_start, exe, stonewall, score, t_delta, t_end) VALUES(?,?,?,?,?,?,?,?);'''
+        cursor = con.cursor()
+        cursor.execute(sql_insert_result, (iofrid, testcase.name, testcase.t_start, testcase.exe, testcase.stonewall, testcase.score, testcase.t_delta, testcase.t_end))
+        con.commit()
+        if testcase.results != -1 and cursor.lastrowid > 0:
+            ioftid = cursor.lastrowid
+            insert_IOFHsResults(con, ioftid, testcase.results)
+            insert_IOFHsOptions(con, ioftid, testcase.options)
+
+
+
+def insert_IOFHsResults(con, ioftid, results):
+    sql_insert_result = '''INSERT INTO IOFHsResults (IOFHsTestcase_id, access, bwMiB, iops, latency, blockKiB, xferKiB, openTime, wrRdTime, closeTime, totalTime, iter) 
+    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);'''
+    cursor = con.cursor()
+    cursor.execute(sql_insert_result, (ioftid, results.access, results.bwMiB, results.iops, results.latency, results.blockKiB, results.xferKiB, results.openTime, results.wrRdTime, results.closeTime, results.totalTime, results.iter))
+    con.commit()
+
+
+def insert_IOFHsOptions(con, ioftid, options):
+    sql_insert_result = '''INSERT INTO IOFHsOptions (IOFHsTestcase_id, api, apiVersion, testFileName, access, "type", segments, orderingInaFile, orderingInterFile, taskOffset, 
+    nodes, tasks, clientsPerNode, repetitions, xfersize, blocksize, aggregateFilesize, stonewallingTime, stoneWallingWearOut) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+'''
+    cursor = con.cursor()
+    cursor.execute(sql_insert_result, (ioftid, options.api, options.apiVersion, options.testFileName, options.access, options.type, options.segments, options.orderingInaFile, options.orderingInterFile,
+                                       options.taskOffset, options.nodes, options.tasks, options.clientsPerNode, options.repetitions,options.xfersize,
+                                       options.blocksize, options.aggregateFilesize, options.stonewallingTime, options.stoneWallingWearOut))
+    con.commit()
 
 
 def insert_filesystem(con, pm):
@@ -398,9 +492,9 @@ def get_beegfs_settings():
 
 def startup(flag, con, mod):
     if flag:
-        get_sys_info()
-        my = read_io500()
+        io500 = read_io500()
         generate_tables(con)
+        insert_IOFHs(con, io500)
     else:
         if 0:
             delete_tables(con)
