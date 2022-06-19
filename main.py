@@ -490,39 +490,53 @@ def get_beegfs_settings():
     return Beegfs(settings[0], settings[1], settings[2], settings[3], settings[4], settings[5])
 
 
-def startup(flag, con, mod):
-    if flag:
-        io500 = read_io500()
+def startup(mod="test", isCluster=0, rootdir="./", io500Dir="2022.06.16-13.32.58/"):
+    con = create_connection(r"pythonsqlite.db")
+    if mod == 'test':
+        io500 = read_io500(io500Dir)
         generate_tables(con)
         insert_IOFHs(con, io500)
-    else:
-        if 0:
-            delete_tables(con)
+    elif mod == "darshan":
+        get_darshan()
+    elif mod == "reset":
+        delete_tables(con)
+    elif mod == "io500":
+        io500 = read_io500(io500Dir)
+        generate_tables(con)
+        insert_IOFHs(con, io500)
+    elif mod == 'ior':
+        generate_tables(con)
+        if isCluster:
+            fs = get_fs_settings()
+            for subdir, dirs, files in os.walk(rootdir):
+                for file in files:
+                    if file == 'stdout':
+                        print(os.path.join(subdir, file))
+                        pm = read_log(os.path.join(subdir, file), fs)
+                        insert_performance(con, pm)
+                        insert_filesystem(con, pm)
         else:
-            if mod == "cluster":
-                fs = get_fs_settings()
-                generate_tables(con)
-                rootdir = '.'
-                for subdir, dirs, files in os.walk(rootdir):
-                    for file in files:
-                        if file == 'stdout':
-                            print(os.path.join(subdir, file))
-                            pm = read_log(os.path.join(subdir, file), fs)
-                            insert_performance(con, pm)
-                            insert_filesystem(con, pm)
-            else:
-                generate_tables(con)
-                rootdir = '.'
-                for subdir, dirs, files in os.walk(rootdir):
-                    for file in files:
-                        if file == 'stdout':
-                            print(os.path.join(subdir, file))
-                            pm = read_log(os.path.join(subdir, file))
-                            insert_performance(con, pm)
+            for subdir, dirs, files in os.walk(rootdir):
+                for file in files:
+                    if file == 'stdout':
+                        print(os.path.join(subdir, file))
+                        pm = read_log(os.path.join(subdir, file))
+                        insert_performance(con, pm)
 
 
 if __name__ == '__main__':
-    con = create_connection(r"pythonsqlite.db")
-    startup(1, con, "cluster")
-    # pathToSqliteDb = 'pythonsqlite.db'
-    # sqliteToJson(pathToSqliteDb)
+    parser = argparse.ArgumentParser(description='Knowledge Extractor')
+    parser.add_argument('--mod', type=str,
+                        help='Choose modus in following options: io500, ior, darshan ,test, reset')
+    parser.add_argument('--rootDir', type=str,
+                        help='Parameter for IOR Extractor - Dir where to extract the ior json')
+    parser.add_argument('--isCluster', type=bool,
+                        help='Parameter for IOR Extractor for Cluster & 0 for local')
+    parser.add_argument('--io500Dir', type=str,
+                        help='Parameter for IO500 Extractor - Dir where to extract io500 results')
+    args = parser.parse_args()
+    if len(sys.argv) ==1:
+        startup("test", "./", "2022.06.16-13.32.58/", 0)
+    else:
+        startup(args.mod, args.isCluster, args.rootDir, args.io500Dir)
+
