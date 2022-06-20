@@ -253,9 +253,9 @@ def generate_tables(con):
 
             elif name == "sysinfos":
                 sql_create_sysinfos = "CREATE TABLE sysinfos ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, IOFH_id INTEGER NOT NULL, name TEXT, " \
-                                         "kernel_version TEXT,processor_architecture TEXT,processor_model TEXT,processor_frequency REAL,processor_threads INTEGER,processor_vendor TEXT," \
-                                         "processor_L2 INTEGER,processor_L3 INTEGER, processor_coresPerSocket INTEGER " \
-                                      ",distribution TEXT ,distribution_version TEXT ,memory_capacity INTEGER, CONSTRAINT sysinfos_FK FOREIGN KEY (IOFH_id) REFERENCES IOFHs(id));"
+                                         "kernel_version TEXT,processor_architecture TEXT,processor_model TEXT,processor_frequency TEXT,processor_threads INTEGER,processor_vendor TEXT," \
+                                         "processor_L2 TEXT, processor_L3 TEXT, processor_coresPerSocket INTEGER " \
+                                      ",distribution TEXT ,distribution_version TEXT ,memory_capacity TEXT, CONSTRAINT sysinfos_FK FOREIGN KEY (IOFH_id) REFERENCES IOFHs(id));"
                 con.cursor().execute(sql_create_sysinfos)
             elif name == "IOFHs":
                 sql_create_IOFHs = "CREATE TABLE IOFHs ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, start TEXT, end TEXT);"
