@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workpackages>
+  <workpackage id="0">
+    <step cycle="0" iteration="0">execute</step>
+    <parameterset>
+      <parameter mode="text" name="nodes" separator=";" type="string">
+        <value>10;20;40;80;</value>
+        <selection idx="0">10</selection>
+      </parameter>
+      <parameter mode="text" name="blockSize" separator=";" type="string">
+        <value>4m</value>
+      </parameter>
+      <parameter mode="text" name="transferSize" separator=";" type="string">
+        <value>2m</value>
+      </parameter>
+      <parameter mode="text" name="segmentCount" separator="," type="int">
+        <value>32</value>
+      </parameter>
+      <parameter mode="text" name="outputPath" separator="," type="string">
+        <value>/scratch/fuchs/aglippert/zhuz/test80</value>
+      </parameter>
+    </parameterset>
+    <iteration_siblings>0</iteration_siblings>
+    <environment/>
+  </workpackage>
+  <workpackage id="1">
+    <step cycle="0" iteration="0">execute</step>
+    <parameterset>
+      <parameter mode="text" name="nodes" separator=";" type="string">
+        <value>10;20;40;80;</value>
+        <selection idx="1">20</selection>
+      </parameter>
+      <parameter mode="text" name="blockSize" separator=";" type="string">
+        <value>4m</value>
+      </parameter>
+      <parameter mode="text" name="transferSize" separator=";" type="string">
+        <value>2m</value>
+      </parameter>
+      <parameter mode="text" name="segmentCount" separator="," type="int">
+        <value>32</value>
+      </parameter>
+      <parameter mode="text" name="outputPath" separator="," type="string">
+        <value>/scratch/fuchs/aglippert/zhuz/test80</value>
+      </parameter>
+    </parameterset>
+    <iteration_siblings>1</iteration_siblings>
+    <environment/>
+  </workpackage>
+  <workpackage id="2">
+    <step cycle="0" iteration="0">execute</step>
+    <parameterset>
+      <parameter mode="text" name="nodes" separator=";" type="string">
+        <value>10;20;40;80;</value>
+        <selection idx="2">40</selection>
+      </parameter>
+      <parameter mode="text" name="blockSize" separator=";" type="string">
+        <value>4m</value>
+      </parameter>
+      <parameter mode="text" name="transferSize" separator=";" type="string">
+        <value>2m</value>
+      </parameter>
+      <parameter mode="text" name="segmentCount" separator="," type="int">
+        <value>32</value>
+      </parameter>
+      <parameter mode="text" name="outputPath" separator="," type="string">
+        <value>/scratch/fuchs/aglippert/zhuz/test80</value>
+      </parameter>
+    </parameterset>
+    <iteration_siblings>2</iteration_siblings>
+    <environment/>
+  </workpackage>
+  <workpackage id="3">
+    <step cycle="0" iteration="0">execute</step>
+    <parameterset>
+      <parameter mode="text" name="nodes" separator=";" type="string">
+        <value>10;20;40;80;</value>
+        <selection idx="3">80</selection>
+      </parameter>
+      <parameter mode="text" name="blockSize" separator=";" type="string">
+        <value>4m</value>
+      </parameter>
+      <parameter mode="text" name="transferSize" separator=";" type="string">
+        <value>2m</value>
+      </parameter>
+      <parameter mode="text" name="segmentCount" separator="," type="int">
+        <value>32</value>
+      </parameter>
+      <parameter mode="text" name="outputPath" separator="," type="string">
+        <value>/scratch/fuchs/aglippert/zhuz/test80</value>
+      </parameter>
+    </parameterset>
+    <iteration_siblings>3</iteration_siblings>
+    <environment/>
+  </workpackage>
+  <workpackage id="4">
+    <step cycle="0" iteration="0">execute</step>
+    <parameterset>
+      <parameter mode="text" name="nodes" separator=";" type="string">
+        <value>10;20;40;80;</value>
+        <selection idx="4"/>
+      </parameter>
+      <parameter mode="text" name="blockSize" separator=";" type="string">
+        <value>4m</value>
+      </parameter>
+      <parameter mode="text" name="transferSize" separator=";" type="string">
+        <value>2m</value>
+      </parameter>
+      <parameter mode="text" name="segmentCount" separator="," type="int">
+        <value>32</value>
+      </parameter>
+      <parameter mode="text" name="outputPath" separator="," type="string">
+        <value>/scratch/fuchs/aglippert/zhuz/test80</value>
+      </parameter>
+    </parameterset>
+    <iteration_siblings>4</iteration_siblings>
+    <environment/>
+  </workpackage>
+</workpackages>

@@ -1,0 +1,39 @@
+IOR-3.4.0+dev: MPI Coordinated Test of Parallel I/O
+Began               : Thu Jun 16 13:45:12 2022
+Command line        : ./ior --dataPacketType=timestamp -C -Q 1 -g -G=1853308558 -k -e -o ./datafiles/2022.06.16-13.32.58/ior-hard/file -O stoneWallingStatusFile=./results/2022.06.16-13.32.58/ior-hard.stonewall -t 47008 -b 47008 -s 10000000 -w -D 300 -a POSIX -O saveRankPerformanceDetailsCSV=./results/2022.06.16-13.32.58/ior-hard-write.csv -O stoneWallingWearOut=1
+Machine             : Linux node33-020.cm.cluster
+TestID              : 0
+StartTime           : Thu Jun 16 13:45:12 2022
+Path                : ./datafiles/2022.06.16-13.32.58/ior-hard/file
+FS                  : 2415.8 TiB   Used FS: 18.6%   Inodes: 0.0 Mi   Used Inodes: -nan%
+
+Options: 
+api                 : POSIX
+apiVersion          : 
+test filename       : ./datafiles/2022.06.16-13.32.58/ior-hard/file
+access              : single-shared-file
+type                : independent
+segments            : 10000000
+ordering in a file  : sequential
+ordering inter file : constant task offset
+task offset         : 1
+nodes               : 2
+tasks               : 40
+clients per node    : 20
+repetitions         : 1
+xfersize            : 47008 bytes
+blocksize           : 47008 bytes
+aggregate filesize  : 17.10 TiB
+stonewallingTime    : 300
+stoneWallingWearOut : 1
+
+Results: 
+
+access    bw(MiB/s)  IOPS       Latency(s)  block(KiB) xfer(KiB)  open(s)    wr/rd(s)   close(s)   total(s)   iter
+------    ---------  ----       ----------  ---------- ---------  --------   --------   --------   --------   ----
+stonewalling pairs accessed min: 1559 max: 21181 -- min data: 0.1 GiB mean data: 0.4 GiB time: 300.0s
+WARNING: Expected aggregate file size       = 18803200000000
+WARNING: Stat() of aggregate file size      = 39827057920
+WARNING: Using actual aggregate bytes moved = 39827057920
+WARNING: Maybe caused by deadlineForStonewalling
+write     27.78      619.74     369.35      45.91      45.91      0.013404   1367.09    0.006532   1367.11    0   

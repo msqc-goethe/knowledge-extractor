@@ -3,19 +3,21 @@ import copy
 
 
 class Parameters:
-    def __init__(self, testID, refnum, api, platform, testFileName, deadlineForStonewall, stoneWallingWearOut,
+    def __init__(self, testID, refnum, api, platform, testFileName,  deadlineForStonewall, stoneWallingWearOut,
                  maxTimeDuration, outlierThreshold,
                  options, dryRun, nodes, memoryPerTask, memoryPerNode, tasksPerNode, repetitions, multiFile,
-                 interTestDelay, fsync, fsyncperwrite, useExistingTestFile, uniqueDir, singleXferAttempt,
+                 interTestDelay, fsync, fsyncperwrite, useExistingTestFile,  uniqueDir,  singleXferAttempt,
                  readFile, writeFile, filePerProc, reorderTasks, reorderTasksRandom, reorderTasksRandomSeed,
-                 randomOffset, checkWrite, checkRead, dataPacketType, keepFile, keepFileWithError, warningAsErrors,
+                 randomOffset, checkWrite, checkRead, keepFile, keepFileWithError, quitOnError,
                  verbose, collective, segmentCount, transferSize,
-                 blockSize):
+                 blockSize, hintsFileName="", showHints=-1, individualDataSets=-1, preallocate=-1, useFileView=-1,
+                 setAlignment=-1, storeFileOffset=-1, useSharedFilePointer=-1, useStridedDatatype=-1, warningAsErrors=-1):
         self.testID = testID
         self.refnum = refnum
         self.api = api
         self.platform = platform
         self.testFileName = testFileName
+        self.hintsFileName = hintsFileName
         self.deadlineForStonewall = deadlineForStonewall
         self.stoneWallingWearOut = stoneWallingWearOut
         self.maxTimeDuration = maxTimeDuration
@@ -32,7 +34,9 @@ class Parameters:
         self.fsync = fsync
         self.fsyncperwrite = fsyncperwrite
         self.useExistingTestFile = useExistingTestFile
+        self.showHints =  showHints
         self.uniqueDir = uniqueDir
+        self.individualDataSets = individualDataSets
         self.singleXferAttempt = singleXferAttempt
         self.readFile = readFile
         self.writeFile = writeFile
@@ -43,10 +47,16 @@ class Parameters:
         self.randomOffset = randomOffset
         self.checkWrite = checkWrite
         self.checkRead = checkRead
-        self.dataPacketType = dataPacketType
+        self.preallocate = preallocate
+        self.useFileView = useFileView
+        self.setAlignment = setAlignment
+        self.storeFileOffset = storeFileOffset
+        # self.dataPacketType = dataPacketType
+        self.useSharedFilePointer = useSharedFilePointer
+        self.useStridedDatatype = useStridedDatatype
         self.keepFile = keepFile
         self.keepFileWithError = keepFileWithError
-        self.warningAsErrors = warningAsErrors
+        self.quitOnError = quitOnError
         self.verbose = verbose
 #        self.data_packet_type = data_packet_type
 #       self.setTimeStampSignature_incompressibleSeed = setTimeStampSignature_incompressibleSeed
@@ -54,6 +64,7 @@ class Parameters:
         self.segmentCount = segmentCount
         self.transferSize = transferSize
         self.blockSize = blockSize
+        self.warningAsErrors = warningAsErrors
 
 
     # @staticmethod
@@ -140,11 +151,15 @@ class Test:
 
 
 class Builder:
-    def create_from_json(json_dictionary):
+    def create_from_json(json_dictionary, fs):
+        # print(json_dictionary)
         results = []
         summaries = []
-        for result in json_dictionary['tests'][0]['Results']:
-            results.append(Result(**result))
+        # for result in json_dictionary['tests'][0]['Results']:
+        for result_s in json_dictionary['tests'][0]['Results']:
+            for result in result_s:
+                #print(result)
+                results.append(Result(**result))
         for summary in json_dictionary['summary']:
             summaries.append(Summary(**summary))
         p = json_dictionary['tests'][0]['Parameters']
@@ -153,11 +168,11 @@ class Builder:
         cmd = json_dictionary['Command line']
         ts = json_dictionary['Began']
         te = json_dictionary['Finished']
-        return PerformanceModel(cmd, ts, te, Parameters(**p), summaries, results)
+        return PerformanceModel(cmd, ts, te, Parameters(**p), summaries, results, fs)
 
 
 class PerformanceModel:
-    def __init__(self, cmd, ts, te, parameters, summaries, results):
+    def __init__(self, cmd, ts, te, parameters, summaries, results, fs):
         self.id = 0
         self.cmd = cmd
         self.ts = ts
@@ -165,6 +180,13 @@ class PerformanceModel:
         self.parameters = parameters
         self.summaries = summaries
         self.results = results
+        self.fs = fs
+
+
+class FilesystemModel:
+    def __init__(self, type="", settings=""):
+        self.type = type
+        self.settings = settings
 
 
 class Beegfs:
@@ -175,3 +197,39 @@ class Beegfs:
         self.StripePatternType = StripePatternType
         self.StripePatternChunkSize = StripePatternChunkSize
         self.StripePatternStoragePool = StripePatternStoragePool
+
+class Testcase:
+    def __init__(self, name, t_start, exe, score, t_delta, t_end, stonewall =-1, opt=-1, results=-1):
+        self.name = name
+        self.t_start = t_start
+        self.exe = exe
+        self.score = score
+        self.t_delta = t_delta
+        self.t_end = t_end
+        self.stonewall = stonewall
+        self.options = opt
+        self.results = results
+
+class Score:
+    def __init__(self, MD, BW, score, hash):
+        self.MD = MD
+        self.BW = BW
+        self.SCORE = score
+        self.hash = hash
+
+class Run:
+    def __init__(self, procs, version, config_hash, result_dir, mode):
+        self.procs = procs
+        self.version = version
+        self.config_hash = config_hash
+        self.result_dir = result_dir
+        self.mode = mode
+
+class IO500:
+    def __init__(self, run, testcases, score, start, end, sysinfo):
+        self.run = run
+        self.testcases = testcases
+        self.score = score
+        self.start = start
+        self.end = end
+        self.sysinfo = sysinfo

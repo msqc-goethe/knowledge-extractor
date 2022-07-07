@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube>
+  <benchmark name="ior" outpath="./bench_run">
+    <comment>Ior benchmark</comment>
+
+    <!-- Configuration -->
+    <parameterset name="ior_parameter">
+      <parameter name="nodes"  separator=";">10;20;40;80</parameter>
+      <parameter name="blockSize" separator=";">4m</parameter>
+      <parameter name="iteration" separator=";">6</parameter>
+      <parameter name="transferSize" separator=";">2m</parameter>
+      <parameter name="segmentCount"  type="int">40</parameter>
+      <parameter name="outputPath">/scratch/fuchs/aglippert/zhuz/test80</parameter>
+      <!--<parameter name="filePerProc">F</parameter>
+      <parameter name="collective">c</parameter>-->
+    </parameterset>
+    
+    <!-- Operation -->
+   <!-- 
+    <step name="pre">
+      <do>module load mpi/openmpi/3.1.2-gcc-8.2.0</do> 
+    </step>
+-->
+    <step name="execute">
+      <use>ior_parameter</use> <!-- use existing parameterset -->
+      <do>module load mpi/openmpi/3.1.2-gcc-8.2.0</do>
+      <do>module load ior-3.3.0-gcc-4.8.5-4g27txg</do> 
+      <do> mpirun -n $nodes ior -a mpiio -b $blockSize -t $transferSize -s $segmentCount -F -C -e -i $iteration -o $outputPath -k -O summaryFormat=json</do> <!-- shell command -->
+    </step>    
+  </benchmark>
+</jube>
