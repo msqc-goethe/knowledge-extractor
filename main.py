@@ -215,7 +215,7 @@ def test_output():
 
 def generate_tables(con):
     cur = con.cursor()
-    tns = ["performances", "summaries", "results", "filesystems", "sysinfos", "IOFHs", "IOFHsRuns","IOFHsScores", "IOFHsTestcases","IOFHsOptions", "IOFHsResults"]
+    tns = ["performances", "summaries", "results", "filesystems", "sysinfos", "IOFHs", "IOFHsRuns","IOFHsScores", "IOFHsTestcases","IOFHsOptions", "IOFHsResults", "DarshanSummaries"]
     for name in tns:
         sql = "SELECT name FROM sqlite_master WHERE type=\"table\" AND name=(?)"
         # print(sql, name)
@@ -284,6 +284,9 @@ def generate_tables(con):
                                        "iops REAL, latency REAL, blockKiB REAL, xferKiB REAL ,openTime REAL, wrRdTime REAL, closeTime REAL , totalTime REAL " \
                                           ",iter INTEGER, CONSTRAINT IOFHsOptions_FK FOREIGN KEY (IOFHsTestcase_id) REFERENCES IOFHsTestcases(id));"
                 con.cursor().execute(sql_create_IOFHsResults)
+            elif name == "DarshanSummaries":
+                sql_create_DarshanSummaries= "CREATE TABLE DarshanSummaries ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, meta TEXT, summary TEXT);"
+                con.cursor().execute(sql_create_DarshanSummaries)
 
 
 def delete_tables(con):
@@ -299,6 +302,8 @@ def delete_tables(con):
     print(con.cursor().execute("DROP TABLE IOFHsRuns"))
     print(con.cursor().execute("DROP TABLE IOFHs"))
     print(con.cursor().execute("DROP TABLE sysinfos"))
+
+    print(con.cursor().execute("DROP TABLE DarshanSummaries"))
 
 
 
@@ -380,6 +385,12 @@ def insert_filesystem(con, pm):
     sql_insert_result = '''INSERT INTO filesystems (performance_id, type, settings) VALUES(?, ?, ?);'''
     cursor = con.cursor()
     cursor.execute(sql_insert_result, (pm.id, pm.fs.type, pm.fs.settings))
+    con.commit()
+
+def insert_DarshanSummaries(con, meta, sum):
+    sql_insert_result = '''INSERT INTO DarshanSummaries (meta, summary) VALUES(?, ?);'''
+    cursor = con.cursor()
+    cursor.execute(sql_insert_result, (meta, sum))
     con.commit()
 
 
@@ -466,18 +477,39 @@ def get_fs_settings():
     return fs
 
 
-def get_darshan():
-    report = darshan.DarshanReport('darshan_log/zhuz_ior_id40360-40360_3-13-54672-13184412277053247260_14.darshan',
-                                   read_all=False)
-    report.mod_read_all_records('POSIX')
-    report.mod_read_all_records('MPI-IO')
+def get_darshan(con):
+    test = 'darshan-logs/zhuz_hacc_io_id55036-55036_7-24-60888-9661464804670403708_3123.darshan'
+    report = darshan.DarshanReport(test, read_all=True)
+    # report.mod_read_all_records('POSIX')
+    # report.mod_read_all_records('MPI-IO')
     # or fetch all
-    # report.read_all_generic_records()
+    report.read_all_generic_records()
 
     # Generate summaries for currently loaded data
     # Note: aggregations are still experimental and have to be activated:
     darshan.enable_experimental()
     report.summarize()
+    i = 8
+'''
+    for subdir, dirs, files in os.walk("darshan-logs/"):
+        for file in files:
+            if file.endswith(".darshan"):
+                report = darshan.DarshanReport(os.path.join(subdir, file), read_all=True)
+                # report.mod_read_all_records('POSIX')
+                # report.mod_read_all_records('MPI-IO')
+                # or fetch all
+                report.read_all_generic_records()
+
+                # Generate summaries for currently loaded data
+                # Note: aggregations are still experimental and have to be activated:
+                darshan.enable_experimental()
+                report.summarize()
+                print(report.report)
+                i=8
+              #  insert_DarshanSummaries(con=con, meta=json.dumps(report.metadata), sum=json.dumps(report.summary))
+
+'''
+
 
 
 def get_beegfs_settings():
@@ -491,13 +523,14 @@ def get_beegfs_settings():
 
 
 def startup(mod="test", isCluster=0, rootdir="./", io500Dir="2022.06.16-13.32.58/"):
-    con = create_connection(r"pythonsqlite.db")
+    con = create_connection(r"../IO-Knowledge-API/pythonsqlite.db")
     if mod == 'test':
         io500 = read_io500(io500Dir)
         generate_tables(con)
         insert_IOFHs(con, io500)
     elif mod == "darshan":
-        get_darshan()
+        generate_tables(con)
+        get_darshan(con)
     elif mod == "reset":
         delete_tables(con)
     elif mod == "io500":
@@ -536,7 +569,8 @@ if __name__ == '__main__':
                         help='Parameter for IO500 Extractor - Dir where to extract io500 results')
     args = parser.parse_args()
     if len(sys.argv) ==1:
-        startup("test", "./", "2022.06.16-13.32.58/", 0)
+        #startup("test", "./", "2022.06.16-13.32.58/", 0)
+        startup("darshan")
     else:
         startup(args.mod, args.isCluster, args.rootDir, args.io500Dir)
 
