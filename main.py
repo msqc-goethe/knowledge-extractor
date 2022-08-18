@@ -522,7 +522,7 @@ def get_beegfs_settings():
     return Beegfs(settings[0], settings[1], settings[2], settings[3], settings[4], settings[5])
 
 
-def startup(mod="test", isCluster=0, rootdir="./", io500Dir="2022.06.16-13.32.58/"):
+def startup(mod="test", isCluster=0, rootdir="./", io500Dir="io500-log/2022.06.16-13.32.58/"):
     con = create_connection(r"../IO-Knowledge-API/pythonsqlite.db")
     if mod == 'test':
         io500 = read_io500(io500Dir)
@@ -570,7 +570,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if len(sys.argv) ==1:
         #startup("test", "./", "2022.06.16-13.32.58/", 0)
-        startup("darshan")
+        #startup("darshan")
+        startup("io500", io500Dir="io500-log/2022.06.16-13.32.58/")
     else:
         startup(args.mod, args.isCluster, args.rootDir, args.io500Dir)
 
