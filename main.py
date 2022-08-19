@@ -507,7 +507,6 @@ def get_darshan(con):
                 print(report.report)
                 i=8
               #  insert_DarshanSummaries(con=con, meta=json.dumps(report.metadata), sum=json.dumps(report.summary))
-
 '''
 
 
@@ -550,10 +549,11 @@ def startup(mod="test", isCluster=0, rootdir="./", io500Dir="io500-log/2022.06.1
                         insert_filesystem(con, pm)
         else:
             for subdir, dirs, files in os.walk(rootdir):
+                fs = Beegfs('1M', 'desired: 4', 'RAID0', '694-62447785-1', 'directory', 'mds01 [ID: 1]')
                 for file in files:
                     if file == 'stdout':
                         print(os.path.join(subdir, file))
-                        pm = read_log(os.path.join(subdir, file))
+                        pm = read_log(os.path.join(subdir, file), fs)
                         insert_performance(con, pm)
 
 
@@ -571,7 +571,8 @@ if __name__ == '__main__':
     if len(sys.argv) ==1:
         #startup("test", "./", "2022.06.16-13.32.58/", 0)
         #startup("darshan")
-        startup("io500", io500Dir="io500-log/2022.06.16-13.32.58/")
+        #startup("io500", io500Dir="io500-log/2022.06.16-13.32.58/")
+        startup("ior", rootdir="ior-logs")
     else:
         startup(args.mod, args.isCluster, args.rootDir, args.io500Dir)
 
