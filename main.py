@@ -213,9 +213,32 @@ def test_output():
             print(cmd)
 
 
+def read_haccio(con, path='hacc-logs/'):
+    arr = []
+    for subdir, dirs, files in os.walk(path):
+        for file in files:
+            fp = os.path.join(subdir, file)
+            if '.git' not in fp:
+                with open(fp, "r") as f:
+                    ob = []
+                    lines = f.readlines()
+                    for i in range(0, len(lines)):
+                        line = lines[i].lstrip().rstrip()
+                        if line.startswith('READ') or line.startswith('WRITE'):
+                            ob.append({'operation': line.split(':')[0], 'bw': line.split(':')[1].split()[0:2:1],
+                                       'size': line.split(':')[1].split()[2:4:1], 'time': line.split(':')[1].split()[4:6:1]})
+                    cu = {'name_app': 'Haccio', 'type': 'Benchmark', 'summary': json.dumps(ob)}
+                    print(get_fs_settings())
+                    print(get_sys_info())
+                    dummy_fs = "{\"entryType\":\"directory\\n\",\"entryID\":\"694-62447785-1\\n\",\"metadataNode\":\"mds01[ID:1]\\n\",\"StripePatternType\":\"RAID0\\n\",\"StripePatternChunkSize\":\"1M\\n\",\"StripePatternStoragePool\":\"desired:4\\n\"}"
+                    dummy_sy = "{\"procs\":40,\"name\":\"fuchs.cm.cluster-nv\",\"kernel_version\":\"3.10.0-1160.53.1.el7.x86_64\",\"processor_architecture\":\"x86_64\",\"processor_model\":\"IntelXeonE5-2670v2\",\"processor_frequency\":\"02.50GHz\",\"processor_threads\":2,\"processor_vendor\":\"GenuineIntel\",\"processor_L2\":\"256K\",\"processor_L3\":\"25600K\",\"processor_coresPerSocket\":10,\"distribution\":\"scientific\",\"distribution_version\":\"7.9\",\"memory_capacity\":\"131932792KiB\"}"
+                    insert_custom(con, cu, dummy_fs, dummy_sy)
+    print(arr)
+
+
 def generate_tables(con):
     cur = con.cursor()
-    tns = ["performances", "summaries", "results", "filesystems", "sysinfos", "IOFHs", "IOFHsRuns","IOFHsScores", "IOFHsTestcases","IOFHsOptions", "IOFHsResults", "DarshanSummaries"]
+    tns = ["performances", "summaries", "results", "filesystems", "sysinfos", "IOFHs", "IOFHsRuns","IOFHsScores", "IOFHsTestcases","IOFHsOptions", "IOFHsResults", "DarshanSummaries", "Custom"]
     for name in tns:
         sql = "SELECT name FROM sqlite_master WHERE type=\"table\" AND name=(?)"
         # print(sql, name)
@@ -287,6 +310,9 @@ def generate_tables(con):
             elif name == "DarshanSummaries":
                 sql_create_DarshanSummaries= "CREATE TABLE DarshanSummaries ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, meta TEXT, summary TEXT);"
                 con.cursor().execute(sql_create_DarshanSummaries)
+            elif name == "Custom":
+                sql_create_Custom = "CREATE TABLE Custom ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name_app TEXT, type TEXT, summary TEXT, sysinfo TEXT, fs TEXT);"
+                con.cursor().execute(sql_create_Custom)
 
 
 def delete_tables(con):
@@ -304,7 +330,17 @@ def delete_tables(con):
     print(con.cursor().execute("DROP TABLE sysinfos"))
 
     print(con.cursor().execute("DROP TABLE DarshanSummaries"))
+    print(con.cursor().execute("DROP TABLE Custom"))
 
+
+def insert_custom(con, cu, fs, sy):
+    sql_insert_result = '''INSERT INTO Custom
+(name_app, "type", summary, sysinfo, fs)
+VALUES(?, ?, ?, ?, ?);
+'''
+    cursor = con.cursor()
+    cursor.execute(sql_insert_result, (cu['name_app'], cu['type'], cu['summary'], sy, fs))
+    con.commit()
 
 
 def insert_IOFHs(con, iof):
@@ -361,7 +397,6 @@ def insert_IOFHsTestcases(con, iofrid, iof):
             insert_IOFHsOptions(con, ioftid, testcase.options)
 
 
-
 def insert_IOFHsResults(con, ioftid, results):
     sql_insert_result = '''INSERT INTO IOFHsResults (IOFHsTestcase_id, access, bwMiB, iops, latency, blockKiB, xferKiB, openTime, wrRdTime, closeTime, totalTime, iter) 
     VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);'''
@@ -386,6 +421,7 @@ def insert_filesystem(con, pm):
     cursor = con.cursor()
     cursor.execute(sql_insert_result, (pm.id, pm.fs.type, pm.fs.settings))
     con.commit()
+
 
 def insert_DarshanSummaries(con, meta, sum):
     sql_insert_result = '''INSERT INTO DarshanSummaries (meta, summary) VALUES(?, ?);'''
@@ -510,7 +546,6 @@ def get_darshan(con):
 '''
 
 
-
 def get_beegfs_settings():
     settings = []
     with os.popen('beegfs-ctl --getentryinfo .') as stream:
@@ -536,6 +571,9 @@ def startup(mod="test", isCluster=0, rootdir="./", io500Dir="io500-log/2022.06.1
         io500 = read_io500(io500Dir)
         generate_tables(con)
         insert_IOFHs(con, io500)
+    elif mod == "hacc":
+        generate_tables(con)
+        read_haccio(con)
     elif mod == 'ior':
         generate_tables(con)
         if isCluster:
@@ -572,7 +610,7 @@ if __name__ == '__main__':
         #startup("test", "./", "2022.06.16-13.32.58/", 0)
         #startup("darshan")
         #startup("io500", io500Dir="io500-log/2022.06.16-13.32.58/")
-        startup("ior", rootdir="ior-logs")
+        startup("hacc")
     else:
         startup(args.mod, args.isCluster, args.rootDir, args.io500Dir)
 
