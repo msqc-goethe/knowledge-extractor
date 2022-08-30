@@ -552,7 +552,8 @@ def get_darshan(con):
                 darshan.enable_experimental()
                 report.summarize()
                 print(report.report)
-                i=8
+                
+                #change mounts and writtenFile path
                 insert_DarshanSummaries(con=con, meta=json.dumps(report.metadata), sum=json.dumps(report.summary), mounts=json.dumps(report.mounts), writtenFiles=json.dumps(report.paths))
 
 
