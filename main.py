@@ -308,11 +308,15 @@ def generate_tables(con):
                                           ",iter INTEGER, CONSTRAINT IOFHsOptions_FK FOREIGN KEY (IOFHsTestcase_id) REFERENCES IOFHsTestcases(id));"
                 con.cursor().execute(sql_create_IOFHsResults)
             elif name == "DarshanSummaries":
-                sql_create_DarshanSummaries= "CREATE TABLE DarshanSummaries ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, meta TEXT, summary TEXT);"
+                sql_create_DarshanSummaries= "CREATE TABLE DarshanSummaries ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, meta TEXT, summary TEXT, mounts TEXT, writtenFiles TEXT);"
                 con.cursor().execute(sql_create_DarshanSummaries)
             elif name == "Custom":
                 sql_create_Custom = "CREATE TABLE Custom ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name_app TEXT, type TEXT, summary TEXT, sysinfo TEXT, fs TEXT);"
                 con.cursor().execute(sql_create_Custom)
+          #  elif name == "DarshanSummariesExtended":
+           #     sql_create_DarshanSummariesExtended= "CREATE TABLE DarshanSummariesExtended ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, meta TEXT, summary TEXT, mounts TEXT, writtenFiles TEXT);"
+            #    con.cursor().execute(sql_create_DarshanSummariesExtended)
+
 
 
 def delete_tables(con):
@@ -330,6 +334,7 @@ def delete_tables(con):
     print(con.cursor().execute("DROP TABLE sysinfos"))
 
     print(con.cursor().execute("DROP TABLE DarshanSummaries"))
+   #print(con.cursor().execute("DROP TABLE DarshanSummariesExtended"))
     print(con.cursor().execute("DROP TABLE Custom"))
 
 
@@ -422,12 +427,18 @@ def insert_filesystem(con, pm):
     cursor.execute(sql_insert_result, (pm.id, pm.fs.type, pm.fs.settings))
     con.commit()
 
-
+#changed Darshan
 def insert_DarshanSummaries(con, meta, sum):
-    sql_insert_result = '''INSERT INTO DarshanSummaries (meta, summary) VALUES(?, ?);'''
+    sql_insert_result = '''INSERT INTO DarshanSummaries (meta, summary, mounts, writtenFiles) VALUES(?, ?, ?, ?);'''
     cursor = con.cursor()
     cursor.execute(sql_insert_result, (meta, sum))
     con.commit()
+
+#def insert_DarshanSummariesExtended(con, meta, sum, mounts, writtenFiles):
+ #   sql_insert_result = '''INSERT INTO DarshanSummariesExtended (meta, summary, mounts, writtenFiles) VALUES(?, ?, ?, ?);'''
+  #  cursor = con.cursor()
+   # cursor.execute(sql_insert_result, (meta, sum, mounts, writtenFiles))
+    #con.commit()
 
 
 def insert_performance(con, pm):
@@ -514,19 +525,19 @@ def get_fs_settings():
 
 
 def get_darshan(con):
-    test = 'darshan-logs/zhuz_hacc_io_id55036-55036_7-24-60888-9661464804670403708_3123.darshan'
-    report = darshan.DarshanReport(test, read_all=True)
+    #test = 'darshan-logs/zhuz_hacc_io_id55036-55036_7-24-60888-9661464804670403708_3123.darshan'
+    #report = darshan.DarshanReport(test, read_all=True)
     # report.mod_read_all_records('POSIX')
     # report.mod_read_all_records('MPI-IO')
     # or fetch all
-    report.read_all_generic_records()
+    #report.read_all_generic_records()
 
     # Generate summaries for currently loaded data
     # Note: aggregations are still experimental and have to be activated:
-    darshan.enable_experimental()
-    report.summarize()
-    i = 8
-'''
+    #darshan.enable_experimental()
+    #report.summarize()
+    #i = 8
+
     for subdir, dirs, files in os.walk("darshan-logs/"):
         for file in files:
             if file.endswith(".darshan"):
@@ -542,8 +553,28 @@ def get_darshan(con):
                 report.summarize()
                 print(report.report)
                 i=8
-              #  insert_DarshanSummaries(con=con, meta=json.dumps(report.metadata), sum=json.dumps(report.summary))
-'''
+                insert_DarshanSummaries(con=con, meta=json.dumps(report.metadata), sum=json.dumps(report.summary), mounts=json.dumps(report.mounts), writtenFiles=json.dumps(report.paths))
+
+
+#def get_darshanExtended(con):
+ #   for subdir, dirs, files in os.walk("darshan-logs/"):
+  #      for file in files:
+   #         if file.endswith(".darshan"):
+    #            report = darshan.DarshanReport(os.path.join(subdir, file), read_all=True)
+     #           # report.mod_read_all_records('POSIX')
+      #          # report.mod_read_all_records('MPI-IO')
+       #         # or fetch all
+        #        report.read_all_generic_records()
+#
+                # Generate summaries for currently loaded data
+ #               # Note: aggregations are still experimental and have to be activated:
+  #              darshan.enable_experimental()
+   #             report.summarize()
+    #            print(report.report)
+     #           i=8
+      #          #need to find right path from result to mounts and paths
+       #         insert_DarshanSummariesExtended(con=con, meta=json.dumps(report.metadata), sum=json.dumps(report.summary), mounts=json.dumps(report.mounts), writtenFiles=json.dumps(report.paths))
+
 
 
 def get_beegfs_settings():
@@ -565,6 +596,9 @@ def startup(mod="test", isCluster=0, rootdir="./", io500Dir="io500-log/2022.06.1
     elif mod == "darshan":
         generate_tables(con)
         get_darshan(con)
+    #elif mod == "darshanExtended":
+     #   generate_tables(con)
+      #  get_darshanExtended(con)
     elif mod == "reset":
         delete_tables(con)
     elif mod == "io500":
