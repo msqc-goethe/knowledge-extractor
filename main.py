@@ -428,10 +428,10 @@ def insert_filesystem(con, pm):
     con.commit()
 
 #changed Darshan
-def insert_DarshanSummaries(con, meta, sum):
+def insert_DarshanSummaries(con, meta, sum, mounts, writtenFiles):
     sql_insert_result = '''INSERT INTO DarshanSummaries (meta, summary, mounts, writtenFiles) VALUES(?, ?, ?, ?);'''
     cursor = con.cursor()
-    cursor.execute(sql_insert_result, (meta, sum))
+    cursor.execute(sql_insert_result, (meta, sum, mounts, writtenFiles))
     con.commit()
 
 #def insert_DarshanSummariesExtended(con, meta, sum, mounts, writtenFiles):
