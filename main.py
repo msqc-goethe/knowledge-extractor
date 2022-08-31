@@ -554,7 +554,7 @@ def get_darshan(con):
                 print(report.report)
                 
                 #change mounts and writtenFile path
-                insert_DarshanSummaries(con=con, meta=json.dumps(report.metadata), sum=json.dumps(report.summary), mounts=json.dumps(report.mounts), writtenFiles=json.dumps(report.paths))
+                insert_DarshanSummaries(con=con, meta=json.dumps(report.metadata), sum=json.dumps(report.summary), mounts=json.dumps(report.mounts), writtenFiles=json.dumps(report.name_records))
 
 
 #def get_darshanExtended(con):
