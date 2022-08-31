@@ -434,12 +434,6 @@ def insert_DarshanSummaries(con, meta, sum, mounts, writtenFiles):
     cursor.execute(sql_insert_result, (meta, sum, mounts, writtenFiles))
     con.commit()
 
-#def insert_DarshanSummariesExtended(con, meta, sum, mounts, writtenFiles):
- #   sql_insert_result = '''INSERT INTO DarshanSummariesExtended (meta, summary, mounts, writtenFiles) VALUES(?, ?, ?, ?);'''
-  #  cursor = con.cursor()
-   # cursor.execute(sql_insert_result, (meta, sum, mounts, writtenFiles))
-    #con.commit()
-
 
 def insert_performance(con, pm):
     sql_insert_performance = '''INSERT INTO performances (cmd, ts, te, testID, refnum, api, platform, testFileName, hintsFileName,
@@ -551,31 +545,8 @@ def get_darshan(con):
                 # Note: aggregations are still experimental and have to be activated:
                 darshan.enable_experimental()
                 report.summarize()
-                print(report.report)
-                
                 #change mounts and writtenFile path
                 insert_DarshanSummaries(con=con, meta=json.dumps(report.metadata), sum=json.dumps(report.summary), mounts=json.dumps(report.mounts), writtenFiles=json.dumps(report.name_records))
-
-
-#def get_darshanExtended(con):
- #   for subdir, dirs, files in os.walk("darshan-logs/"):
-  #      for file in files:
-   #         if file.endswith(".darshan"):
-    #            report = darshan.DarshanReport(os.path.join(subdir, file), read_all=True)
-     #           # report.mod_read_all_records('POSIX')
-      #          # report.mod_read_all_records('MPI-IO')
-       #         # or fetch all
-        #        report.read_all_generic_records()
-#
-                # Generate summaries for currently loaded data
- #               # Note: aggregations are still experimental and have to be activated:
-  #              darshan.enable_experimental()
-   #             report.summarize()
-    #            print(report.report)
-     #           i=8
-      #          #need to find right path from result to mounts and paths
-       #         insert_DarshanSummariesExtended(con=con, meta=json.dumps(report.metadata), sum=json.dumps(report.summary), mounts=json.dumps(report.mounts), writtenFiles=json.dumps(report.paths))
-
 
 
 def get_beegfs_settings():
@@ -643,9 +614,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if len(sys.argv) ==1:
         #startup("test", "./", "2022.06.16-13.32.58/", 0)
-        #startup("darshan")
+        startup("darshan")
         #startup("io500", io500Dir="io500-log/2022.06.16-13.32.58/")
-        startup("hacc")
+        #startup("hacc")
     else:
         startup(args.mod, args.isCluster, args.rootDir, args.io500Dir)
 
