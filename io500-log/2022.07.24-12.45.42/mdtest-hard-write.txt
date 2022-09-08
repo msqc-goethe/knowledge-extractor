@@ -1,0 +1,33 @@
+-- started at 07/24/2022 13:33:43 --
+
+mdtest-3.4.0+dev was launched with 40 total task(s) on 2 node(s)
+Command line used: ./mdtest '--dataPacketType=timestamp' '-n' '1000000' '-t' '-w' '3901' '-e' '3901' '-P' '-G=-1538183098' '-N' '1' '-F' '-d' './datafiles/2022.07.24-12.45.42/mdtest-hard' '-x' './results/2022.07.24-12.45.42/mdtest-hard.stonewall' '-C' '-Y' '-W' '300' '--saveRankPerformanceDetails=./results/2022.07.24-12.45.42/mdtest-hard-write.csv' '-a' 'POSIX'
+Path                : ./datafiles/2022.07.24-12.45.42/mdtest-hard
+FS                  : 2415.8 TiB   Used FS: 18.5%   Inodes: 0.0 Mi   Used Inodes: -nan%
+Nodemap: 1111111111111111111100000000000000000000
+V-0: Rank   0 Line  2479 Shifting ranks by 20 for each phase.
+40 tasks, 40000000 files
+Continue stonewall hit min: 8614 max: 9304 avg: 8954.6 
+
+
+SUMMARY rate: (of 1 iterations)
+   Operation                     Max            Min           Mean        Std Dev
+   ---------                     ---            ---           ----        -------
+   File creation                 940.327        940.327        940.327          0.000
+   File stat                       0.000          0.000          0.000          0.000
+   File read                       0.000          0.000          0.000          0.000
+   File removal                    0.000          0.000          0.000          0.000
+   Tree creation                2659.673       2659.673       2659.673          0.000
+   Tree removal                    0.000          0.000          0.000          0.000
+
+SUMMARY time: (of 1 iterations)
+   Operation                     Max            Min           Mean        Std Dev
+   ---------                     ---            ---           ----        -------
+   File creation                 395.777        395.777        395.777          0.000
+   File stat                       0.000          0.000          0.000          0.000
+   File read                       0.000          0.000          0.000          0.000
+   File removal                    0.000          0.000          0.000          0.000
+   Tree creation                   0.000          0.000          0.000          0.000
+   Tree removal                    0.000          0.000          0.000          0.000
+-- finished at 07/24/2022 13:40:20 --
+

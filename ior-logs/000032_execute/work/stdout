@@ -1,0 +1,296 @@
+{
+  "Version": "3.3.0", 
+  "Began": "Sun Jul 24 20:38:13 2022", 
+  "Command line": "ior -a mpiio -b 16m -t 2m -s 5 -F -C -e -i 5 -o /scratch/fuchs/aglippert/zhuz/ior_out/16_512 -k -O summaryFormat=json", 
+  "Machine": "Linux node30-001.cm.cluster", 
+  "tests": [
+    {
+    "TestID": 0, 
+    "StartTime": "Sun Jul 24 20:38:13 2022"    , "Path": "/scratch/fuchs/aglippert/zhuz/ior_out","Capacity": "2415.8 TiB", "Used Capacity": "18.4%","Inodes": "0.0 Mi", "Used Inodes" : "-nan%"
+, 
+    "Parameters": {
+      "testID": 0, 
+      "refnum": 0, 
+      "api": "mpiio", 
+      "platform": "node30-001.cm.cluster(Linux)", 
+      "testFileName": "/scratch/fuchs/aglippert/zhuz/ior_out/16_512", 
+      "hintsFileName": "(null)", 
+      "deadlineForStonewall": 0, 
+      "stoneWallingWearOut": 0, 
+      "maxTimeDuration": 0, 
+      "outlierThreshold": 0, 
+      "options": "(null)", 
+      "dryRun": 0, 
+      "nodes": 52, 
+      "memoryPerTask": 0, 
+      "memoryPerNode": 0, 
+      "tasksPerNode": 20, 
+      "repetitions": 5, 
+      "multiFile": 0, 
+      "interTestDelay": 0, 
+      "fsync": 1, 
+      "fsyncperwrite": 0, 
+      "useExistingTestFile": 0, 
+      "showHints": 0, 
+      "uniqueDir": 0, 
+      "individualDataSets": 0, 
+      "singleXferAttempt": 0, 
+      "readFile": 1, 
+      "writeFile": 1, 
+      "filePerProc": 1, 
+      "reorderTasks": 1, 
+      "reorderTasksRandom": 0, 
+      "reorderTasksRandomSeed": 0, 
+      "randomOffset": 0, 
+      "checkWrite": 0, 
+      "checkRead": 0, 
+      "preallocate": 0, 
+      "useFileView": 0, 
+      "setAlignment": 1, 
+      "storeFileOffset": 0, 
+      "useSharedFilePointer": 0, 
+      "useStridedDatatype": 0, 
+      "keepFile": 1, 
+      "keepFileWithError": 0, 
+      "quitOnError": 0, 
+      "verbose": 0, 
+      "data packet type": "g", 
+      "setTimeStampSignature/incompressibleSeed": 0, 
+      "collective": 0, 
+      "segmentCount": 5, 
+      "transferSize": 2097152, 
+      "blockSize": 16777216
+    }
+, 
+    "Options": {
+      "api": "mpiio", 
+      "apiVersion": "(3.1)", 
+      "test filename": "/scratch/fuchs/aglippert/zhuz/ior_out/16_512", 
+      "access": "file-per-process", 
+      "type": "independent", 
+      "segments": 5, 
+      "ordering in a file": "sequential", 
+      "ordering inter file": "constant task offset", 
+      "task offset": 1, 
+      "nodes": 52, 
+      "tasks": 1024, 
+      "clients per node": 20, 
+      "repetitions": 5, 
+      "xfersize": "2 MiB", 
+      "blocksize": "16 MiB", 
+      "aggregate filesize": "80 GiB"
+    }
+, 
+    "Results": [
+      [             {
+        "access": "write", 
+        "bwMiB": 4505.2688, 
+        "blockKiB": 16384.0000, 
+        "xferKiB": 2048.0000, 
+        "iops": 2265.8771, 
+        "latency": 1.5298, 
+        "openTime": 11.7680, 
+        "wrRdTime": 18.0769, 
+        "closeTime": 17.4595, 
+        "totalTime": 18.1832
+      }
+, 
+            {
+        "access": "read", 
+        "bwMiB": 12816.4341, 
+        "blockKiB": 16384.0000, 
+        "xferKiB": 2048.0000, 
+        "iops": 6497.3869, 
+        "latency": 0.1210, 
+        "openTime": 4.4938, 
+        "wrRdTime": 6.3041, 
+        "closeTime": 6.2533, 
+        "totalTime": 6.3918
+      }
+]
+, 
+    [         {
+      "access": "write", 
+      "bwMiB": 4548.6348, 
+      "blockKiB": 16384.0000, 
+      "xferKiB": 2048.0000, 
+      "iops": 2283.5978, 
+      "latency": 1.2507, 
+      "openTime": 12.1195, 
+      "wrRdTime": 17.9366, 
+      "closeTime": 17.6559, 
+      "totalTime": 18.0098
+    }
+, 
+        {
+      "access": "read", 
+      "bwMiB": 12478.2699, 
+      "blockKiB": 16384.0000, 
+      "xferKiB": 2048.0000, 
+      "iops": 6368.7270, 
+      "latency": 0.2441, 
+      "openTime": 4.7595, 
+      "wrRdTime": 6.4314, 
+      "closeTime": 6.3860, 
+      "totalTime": 6.5650
+    }
+]
+, 
+  [     {
+    "access": "write", 
+    "bwMiB": 4329.5711, 
+    "blockKiB": 16384.0000, 
+    "xferKiB": 2048.0000, 
+    "iops": 2183.0522, 
+    "latency": 1.1439, 
+    "openTime": 12.4509, 
+    "wrRdTime": 18.7627, 
+    "closeTime": 18.5278, 
+    "totalTime": 18.9210
+  }
+, 
+    {
+    "access": "read", 
+    "bwMiB": 12791.7730, 
+    "blockKiB": 16384.0000, 
+    "xferKiB": 2048.0000, 
+    "iops": 6531.5449, 
+    "latency": 0.3331, 
+    "openTime": 4.6277, 
+    "wrRdTime": 6.2711, 
+    "closeTime": 6.2409, 
+    "totalTime": 6.4041
+  }
+]
+, 
+[ {
+  "access": "write", 
+  "bwMiB": 4574.4677, 
+  "blockKiB": 16384.0000, 
+  "xferKiB": 2048.0000, 
+  "iops": 2309.3411, 
+  "latency": 1.1144, 
+  "openTime": 12.5031, 
+  "wrRdTime": 17.7367, 
+  "closeTime": 17.4527, 
+  "totalTime": 17.9081
+}
+, 
+{
+  "access": "read", 
+  "bwMiB": 12470.5325, 
+  "blockKiB": 16384.0000, 
+  "xferKiB": 2048.0000, 
+  "iops": 6361.5757, 
+  "latency": 0.2775, 
+  "openTime": 4.7296, 
+  "wrRdTime": 6.4387, 
+  "closeTime": 6.3936, 
+  "totalTime": 6.5691
+}
+]
+, 
+[ {
+"access": "write", 
+"bwMiB": 3378.2890, 
+"blockKiB": 16384.0000, 
+"xferKiB": 2048.0000, 
+"iops": 1697.7966, 
+"latency": 1.0113, 
+"openTime": 11.7653, 
+"wrRdTime": 24.1254, 
+"closeTime": 24.0383, 
+"totalTime": 24.2490
+}
+, 
+{
+"access": "read", 
+"bwMiB": 12744.2891, 
+"blockKiB": 16384.0000, 
+"xferKiB": 2048.0000, 
+"iops": 6546.1862, 
+"latency": 0.3685, 
+"openTime": 4.5336, 
+"wrRdTime": 6.2571, 
+"closeTime": 6.2363, 
+"totalTime": 6.4280
+}
+]
+]
+, 
+"max": {
+"writeMiB": 4574.4677, 
+"writeMB": 4796.6770, 
+"readMiB": 12816.4341, 
+"readMB": 13439.0052
+}
+
+}
+]
+, 
+"summary": [
+{
+"operation": "write", 
+"API": "mpiio", 
+"TestID": 0, 
+"ReferenceNumber": 0, 
+"segmentCount": 5, 
+"blockSize": 16777216, 
+"transferSize": 2097152, 
+"numTasks": 1024, 
+"tasksPerNode": 20, 
+"repetitions": 5, 
+"filePerProc": 1, 
+"reorderTasks": 1, 
+"taskPerNodeOffset": 1, 
+"reorderTasksRandom": 0, 
+"reorderTasksRandomSeed": 0, 
+"segmentCount": 5, 
+"blockSize": 16777216, 
+"transferSize": 2097152, 
+"bwMaxMIB": 4574.4677, 
+"bwMinMIB": 3378.2890, 
+"bwMeanMIB": 4267.2463, 
+"bwStdMIB": 452.6254, 
+"OPsMax": 2287.2339, 
+"OPsMin": 1689.1445, 
+"OPsMean": 2133.6231, 
+"OPsSD": 226.3127, 
+"MeanTime": 19.4542, 
+"xsizeMiB": 81920.0000
+}
+, 
+{
+"operation": "read", 
+"API": "mpiio", 
+"TestID": 0, 
+"ReferenceNumber": 0, 
+"segmentCount": 5, 
+"blockSize": 16777216, 
+"transferSize": 2097152, 
+"numTasks": 1024, 
+"tasksPerNode": 20, 
+"repetitions": 5, 
+"filePerProc": 1, 
+"reorderTasks": 1, 
+"taskPerNodeOffset": 1, 
+"reorderTasksRandom": 0, 
+"reorderTasksRandomSeed": 0, 
+"segmentCount": 5, 
+"blockSize": 16777216, 
+"transferSize": 2097152, 
+"bwMaxMIB": 12816.4341, 
+"bwMinMIB": 12470.5325, 
+"bwMeanMIB": 12660.2597, 
+"bwStdMIB": 153.5342, 
+"OPsMax": 6408.2171, 
+"OPsMin": 6235.2663, 
+"OPsMean": 6330.1299, 
+"OPsSD": 76.7671, 
+"MeanTime": 6.4716, 
+"xsizeMiB": 81920.0000
+}
+]
+, 
+"Finished": "Sun Jul 24 20:40:29 2022"
+}

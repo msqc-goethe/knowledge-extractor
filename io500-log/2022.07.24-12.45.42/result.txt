@@ -1,0 +1,111 @@
+[run]
+procs           = 40
+version         = io500-isc22_v1
+config-hash     = 9713285A
+result-dir      = ./results/2022.07.24-12.45.42
+mode            = standard
+; START 2022-07-24 12:45:53
+
+
+[ior-easy-write]
+t_start         = 2022-07-24 12:45:53
+exe             = ./ior --dataPacketType=timestamp -C -Q 1 -g -G 1870595716 -k -e -o ./datafiles/2022.07.24-12.45.42/ior-easy/ior_file_easy -O stoneWallingStatusFile=./results/2022.07.24-12.45.42/ior-easy.stonewall -t 2m -b 9920000m -F -w -D 300 -O stoneWallingWearOut=1 -a POSIX -O saveRankPerformanceDetailsCSV=./results/2022.07.24-12.45.42/ior-easy-write.csv
+throughput-stonewall = 4.59
+score           = 4.545818
+t_delta         = 308.8761
+t_end           = 2022-07-24 12:51:02
+
+[mdtest-easy-write]
+t_start         = 2022-07-24 12:51:02
+exe             = ./mdtest --dataPacketType=timestamp -n 1000000 -u -L -F -P -G -1538193786 -N 1 -d ./datafiles/2022.07.24-12.45.42/mdtest-easy -x ./results/2022.07.24-12.45.42/mdtest-easy.stonewall -C -Y -W 300 --saveRankPerformanceDetails=./results/2022.07.24-12.45.42/mdtest-easy-write.csv -a POSIX
+rate-stonewall  = 43.836982
+score           = 39.124750
+t_delta         = 382.0080
+t_end           = 2022-07-24 12:57:24
+
+[timestamp]
+t_start         = 2022-07-24 12:57:24
+t_delta         = 0.0003
+t_end           = 2022-07-24 12:57:24
+
+[ior-hard-write]
+t_start         = 2022-07-24 12:57:24
+exe             = ./ior --dataPacketType=timestamp -C -Q 1 -g -G=1870606404 -k -e -o ./datafiles/2022.07.24-12.45.42/ior-hard/file -O stoneWallingStatusFile=./results/2022.07.24-12.45.42/ior-hard.stonewall -t 47008 -b 47008 -s 10000000 -w -D 300 -a POSIX -O saveRankPerformanceDetailsCSV=./results/2022.07.24-12.45.42/ior-hard-write.csv -O stoneWallingWearOut=1
+throughput-stonewall = 0.11
+score           = 0.074541
+t_delta         = 2179.1151
+t_end           = 2022-07-24 13:33:43
+
+[mdtest-hard-write]
+t_start         = 2022-07-24 13:33:43
+exe             = ./mdtest --dataPacketType=timestamp -n 1000000 -t -w 3901 -e 3901 -P -G=-1538183098 -N 1 -F -d ./datafiles/2022.07.24-12.45.42/mdtest-hard -x ./results/2022.07.24-12.45.42/mdtest-hard.stonewall -C -Y -W 300 --saveRankPerformanceDetails=./results/2022.07.24-12.45.42/mdtest-hard-write.csv -a POSIX
+rate-stonewall  = 1.193173
+score           = 0.940327
+t_delta         = 397.1371
+t_end           = 2022-07-24 13:40:20
+
+[find]
+t_start         = 2022-07-24 13:40:20
+exe             = ./pfind ./datafiles/2022.07.24-12.45.42 -newer ./results/2022.07.24-12.45.42/timestampfile -size 3901c -name *01* -C -q 10000
+nproc           = 40
+found           = 7320
+total-files     = 15268801
+score           = 638.226862
+t_delta         = 24.2121
+t_end           = 2022-07-24 13:40:44
+
+[ior-easy-read]
+t_start         = 2022-07-24 13:40:44
+exe             = ./ior --dataPacketType=timestamp -C -Q 1 -g -G 1870595716 -k -e -o ./datafiles/2022.07.24-12.45.42/ior-easy/ior_file_easy -O stoneWallingStatusFile=./results/2022.07.24-12.45.42/ior-easy.stonewall -t 2m -b 9920000m -F -r -R -a POSIX -O saveRankPerformanceDetailsCSV=./results/2022.07.24-12.45.42/ior-easy-read.csv
+score           = 2.654801
+t_delta         = 527.6566
+t_end           = 2022-07-24 13:49:32
+
+[mdtest-easy-stat]
+t_start         = 2022-07-24 13:49:32
+exe             = ./mdtest --dataPacketType=timestamp -n 1000000 -u -L -F -P -G -1538193786 -N 1 -d ./datafiles/2022.07.24-12.45.42/mdtest-easy -x ./results/2022.07.24-12.45.42/mdtest-easy.stonewall -T --saveRankPerformanceDetails=./results/2022.07.24-12.45.42/mdtest-easy-stat.csv -a POSIX
+score           = 79.710342
+t_delta         = 187.9244
+t_end           = 2022-07-24 13:52:40
+
+[ior-hard-read]
+t_start         = 2022-07-24 13:52:40
+exe             = ./ior --dataPacketType=timestamp -C -Q 1 -g -G=1870606404 -k -e -o ./datafiles/2022.07.24-12.45.42/ior-hard/file -O stoneWallingStatusFile=./results/2022.07.24-12.45.42/ior-hard.stonewall -t 47008 -b 47008 -s 10000000 -r -R -a POSIX -O saveRankPerformanceDetailsCSV=./results/2022.07.24-12.45.42/ior-hard-read.csv
+score           = 1.097179
+t_delta         = 148.4318
+t_end           = 2022-07-24 13:55:08
+
+[mdtest-hard-stat]
+t_start         = 2022-07-24 13:55:08
+exe             = ./mdtest --dataPacketType=timestamp -n 1000000 -t -w 3901 -e 3901 -P -G=-1538183098 -N 1 -F -d ./datafiles/2022.07.24-12.45.42/mdtest-hard -x ./results/2022.07.24-12.45.42/mdtest-hard.stonewall -T --saveRankPerformanceDetails=./results/2022.07.24-12.45.42/mdtest-hard-stat.csv -a POSIX
+score           = 33.320563
+t_delta         = 12.4065
+t_end           = 2022-07-24 13:55:20
+
+[mdtest-easy-delete]
+t_start         = 2022-07-24 13:55:20
+exe             = ./mdtest --dataPacketType=timestamp -n 1000000 -u -L -F -P -G -1538193786 -N 1 -d ./datafiles/2022.07.24-12.45.42/mdtest-easy -x ./results/2022.07.24-12.45.42/mdtest-easy.stonewall -r --saveRankPerformanceDetails=./results/2022.07.24-12.45.42/mdtest-easy-delete.csv -a POSIX
+score           = 22.727324
+t_delta         = 673.4703
+t_end           = 2022-07-24 14:06:34
+
+[mdtest-hard-read]
+t_start         = 2022-07-24 14:06:34
+exe             = ./mdtest --dataPacketType=timestamp -n 1000000 -t -w 3901 -e 3901 -P -G=-1538183098 -N 1 -F -d ./datafiles/2022.07.24-12.45.42/mdtest-hard -x ./results/2022.07.24-12.45.42/mdtest-hard.stonewall -E -X --saveRankPerformanceDetails=./results/2022.07.24-12.45.42/mdtest-hard-read.csv -a POSIX
+score           = 3.729458
+t_delta         = 100.7949
+t_end           = 2022-07-24 14:08:15
+
+[mdtest-hard-delete]
+t_start         = 2022-07-24 14:08:15
+exe             = ./mdtest --dataPacketType=timestamp -n 1000000 -t -w 3901 -e 3901 -P -G=-1538183098 -N 1 -F -d ./datafiles/2022.07.24-12.45.42/mdtest-hard -x ./results/2022.07.24-12.45.42/mdtest-hard.stonewall -r --saveRankPerformanceDetails=./results/2022.07.24-12.45.42/mdtest-hard-delete.csv -a POSIX
+score           = 7.910799
+t_delta         = 48.4517
+t_end           = 2022-07-24 14:09:03
+
+[SCORE]
+MD              = 21.265146
+BW              = 0.996734
+SCORE           = 4.603878
+hash            = DD8E98EE
+; END 2022-07-24 14:09:03

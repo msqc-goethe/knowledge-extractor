@@ -1,0 +1,5 @@
+-------- Aggregate Performance --------
+ WRITE Checkpoint Perf: 4335.94 BW[MB/s] 172053684000 Bytes 37.8426 MaxTime[sec] 
+-------- Aggregate Performance --------
+ READ Restart Perf: 7766.15 BW[MB/s] 172053684000 Bytes 21.128 MaxTime[sec] 
+ CONTENTS VERIFIED... Success 

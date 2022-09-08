@@ -1,0 +1,39 @@
+IOR-3.4.0+dev: MPI Coordinated Test of Parallel I/O
+Began               : Sun Jul 24 12:57:24 2022
+Command line        : ./ior --dataPacketType=timestamp -C -Q 1 -g -G=1870606404 -k -e -o ./datafiles/2022.07.24-12.45.42/ior-hard/file -O stoneWallingStatusFile=./results/2022.07.24-12.45.42/ior-hard.stonewall -t 47008 -b 47008 -s 10000000 -w -D 300 -a POSIX -O saveRankPerformanceDetailsCSV=./results/2022.07.24-12.45.42/ior-hard-write.csv -O stoneWallingWearOut=1
+Machine             : Linux node27-001.cm.cluster
+TestID              : 0
+StartTime           : Sun Jul 24 12:57:24 2022
+Path                : ./datafiles/2022.07.24-12.45.42/ior-hard/file
+FS                  : 2415.8 TiB   Used FS: 18.5%   Inodes: 0.0 Mi   Used Inodes: -nan%
+
+Options: 
+api                 : POSIX
+apiVersion          : 
+test filename       : ./datafiles/2022.07.24-12.45.42/ior-hard/file
+access              : single-shared-file
+type                : independent
+segments            : 10000000
+ordering in a file  : sequential
+ordering inter file : constant task offset
+task offset         : 1
+nodes               : 2
+tasks               : 40
+clients per node    : 20
+repetitions         : 1
+xfersize            : 47008 bytes
+blocksize           : 47008 bytes
+aggregate filesize  : 17.10 TiB
+stonewallingTime    : 300
+stoneWallingWearOut : 1
+
+Results: 
+
+access    bw(MiB/s)  IOPS       Latency(s)  block(KiB) xfer(KiB)  open(s)    wr/rd(s)   close(s)   total(s)   iter
+------    ---------  ----       ----------  ---------- ---------  --------   --------   --------   --------   ----
+stonewalling pairs accessed min: 4091 max: 92756 -- min data: 0.2 GiB mean data: 0.8 GiB time: 300.0s
+WARNING: Expected aggregate file size       = 18803200000000
+WARNING: Stat() of aggregate file size      = 174410961920
+WARNING: Using actual aggregate bytes moved = 174410961920
+WARNING: Maybe caused by deadlineForStonewalling
+write     76.33      1702.66    1042.87     45.91      45.91      0.019685   2179.08    0.000449   2179.10    0   
