@@ -3,6 +3,7 @@ import os
 import json
 import argparse
 import darshan
+import glob
 
 from ior_model_builder import Builder, Beegfs, FilesystemModel, IO500, Run, Testcase, Score
 from ior_options_model import I0500OptionsModel, IO500ResultsModel
@@ -60,6 +61,7 @@ def sqliteToJson(pathToSqliteDb):
 def read_log(path, fs):
     with open(path) as json_file:
         json_dictionary = json.loads(json_file.read())
+        return [json_dictionary]
         pm = Builder.create_from_json(json_dictionary, fs)
         return pm
 
@@ -73,13 +75,13 @@ def create_connection(db_file):
         print(f"The error '{e}' occurred")
     return connection
 
-
+#IO500
 def read_io500(path = "2022.06.16-13.32.58/"):
     ts, te = "", ""
     run = Run.__new__(Run)
     score = Score.__new__(Score)
     testcases = []
-    rPath = path + "result.txt"
+    rPath = str(path) + "result.txt"
     with open(rPath, "r") as f:
         lines = f.readlines()
         for i in range(0, len(lines)):
@@ -101,6 +103,7 @@ def read_io500(path = "2022.06.16-13.32.58/"):
                         testcases.append(tc)
                     else:
                         o, r = get_options_results(line.strip("[]\n"), 0, path)
+                        print(type(o))
                         tc = Testcase(line.strip("[]\n"),
                                       lines[i + 1].rstrip().split('=',1)[1],
                                       lines[i + 2].rstrip().split('=',1)[1],
@@ -109,24 +112,28 @@ def read_io500(path = "2022.06.16-13.32.58/"):
                                       lines[i + 5].rstrip().split('=',1)[1],
                                       -1,o,r)
                         testcases.append(tc)
+                #Here Md-test
                 else:
                     if line.find("write") != -1:
+                        o,r = read_md_test(line.strip("[]\n"),path)
                         tc = Testcase(line.strip("[]\n"),
                                       lines[i + 1].rstrip().split('=',1)[1],
                                       lines[i + 2].rstrip().split('=',1)[1],
                                       lines[i + 4].rstrip().split('=',1)[1],
                                       lines[i + 5].rstrip().split('=',1)[1],
                                       lines[i + 6].rstrip().split('=',1)[1],
-                                      lines[i + 3].rstrip().split('=',1)[1])
+                                      lines[i + 3].rstrip().split('=',1)[1],o,r)
                         testcases.append(tc)
                     else:
+                        o,r = read_md_test(line.strip("[]\n"),path)
+                        print(type(o))
                         tc = Testcase(line.strip("[]\n"),
                                       lines[i + 1].rstrip().split('=',1)[1],
                                       lines[i + 2].rstrip().split('=',1)[1],
                                       lines[i + 3].rstrip().split('=',1)[1],
                                       lines[i + 4].rstrip().split('=',1)[1],
                                       lines[i + 5].rstrip().split('=',1)[1],
-                                      -1)
+                                      -1,o,r)
                         testcases.append(tc)
 
             elif line.startswith('[find'):
@@ -144,6 +151,127 @@ def read_io500(path = "2022.06.16-13.32.58/"):
         return IO500(run,testcases,score,ts, te, get_sys_info())
 
 
+
+
+#TestArea
+
+#mdtest to Json
+def mdtestToJSON(lines, length):
+    option = {}
+    result = {}
+    if(length == 31):
+        #startdate
+        option["Starttime"] = lines[0][25:33]
+        #test type + number of task + number of nodes
+
+        #5,6,7,8 split(:)
+        for i in range(3,5):
+            line = lines[i].split(":")
+            for l in line:
+                l.strip()
+            option[line[0]] = line[1]
+
+        option["Nodemap"] = lines[6].split()[1]
+
+        #v-0
+        line = lines[7].split()
+        option["V0_Rank"] = line[2]
+        option["V0_Line"] = line[4]
+        option["V0_ShiftbyPhase"] = line[8]
+
+        #number of task, number of files
+        line = lines[8].split(",")
+        for l in line:
+            ll = l.split()
+            option[ll[1].strip()] = ll[0].strip()
+
+        #14 - 19 min max mean  std dev summary rate
+        summaryrate = {}
+        for i in range(13,19):
+            line = lines[i].split()
+            summaryrate[line[0] + line[1] + "Max"] = line[2]
+            summaryrate[line[0] + line[1] + "Min"] = line[3]
+            summaryrate[line[0] + line[1] + "Mean"] = line[4]
+            summaryrate[line[0] + line[1] + "Std dev"] = line[5]
+        result["SummaryRate"] = summaryrate
+        
+        #24-30 summary time
+        summarytime = {}
+        for i in range(23,29):
+            line = lines[i].split()
+            summarytime[line[0] + line[1] + "Max"] = line[2]
+            summarytime[line[0] + line[1] + "Min"] = line[3]
+            summarytime[line[0] + line[1] + "Mean"] = line[4]
+            summarytime[line[0] + line[1] + "Std dev"] = line[5]
+        #print(summarytime)
+        result["SummaryTime"] = summarytime
+
+        #finish time
+        option["FinishTime"] = lines[29][26:34]
+      
+    elif(length == 33):
+        option["Starttime"] = lines[0][25:33]
+        #14 - 19 min max mean  std dev summary rate
+
+        for i in range(3,5):
+            line = lines[i].split(":")
+            for l in line:
+                l.strip()
+            option[line[0]] = line[1]
+
+        option["Nodemap"] = lines[6].split()[1]
+        #number of task, number of files
+        line = lines[8].split(",")
+        for l in line:
+            ll = l.split()
+            option[ll[1].strip()] = ll[0].strip()
+        #Stonewall
+        line = lines[9].split(":")
+        option["StoneWallMin"] = line[1].split()[0]
+        option["StonewallMax"] = line[2].split()[0]
+        option["StoneWallAvg"] = line[3].split()[0]
+
+
+        summaryrate = {}
+        for i in range(15,21):
+            line = lines[i].split()
+            summaryrate[line[0] + line[1] + "Max"] = line[2]
+            summaryrate[line[0] + line[1] + "Min"] = line[3]
+            summaryrate[line[0] + line[1] + "Mean"] = line[4]
+            summaryrate[line[0] + line[1] + "Std dev"] = line[5]
+        result["SummaryRate"] = summaryrate
+        
+
+        #print(lines[25:31])
+        summarytime = {}
+        for i in range(25,31):
+            line = lines[i].split()
+            summarytime[line[0] + line[1] + "Max"] = line[2]
+            summarytime[line[0] + line[1] + "Min"] = line[3]
+            summarytime[line[0] + line[1] + "Mean"] = line[4]
+            summarytime[line[0] + line[1] + "Std dev"] = line[5]
+        #print(summarytime)
+        result["SummaryTime"] = summarytime
+
+        option["FinishTime"] = lines[31][26:34]
+    return option, result
+
+def read_md_test(testcase,folderPath="io500-log/2022.06.16-13.32.58/"):
+    path = folderPath + testcase + ".txt"
+    results = []
+    #print(glob.glob("io500-log/**/*.txt", recursive=True))
+    #for file in glob.glob("io500-log/**/*.txt", recursive=True):
+        #if file.find("mdtest") != -1:
+            #print(file)
+    with open(path) as f:
+            lines = f.readlines()
+            o,r = mdtestToJSON(lines,len(lines))
+            #results.append(mdtestToJSON(lines,len(lines)))
+    return o,r
+
+#read_md_test(1,"mdtest-easy-write")
+
+#IO500
 def get_options_results(testcase, isWrite, folderPath = "2022.06.16-13.32.58/"):
     options = I0500OptionsModel.__new__(I0500OptionsModel)
     result = IO500ResultsModel.__new__(IO500ResultsModel)
@@ -212,7 +340,7 @@ def test_output():
             print(results[0].access)
             print(cmd)
 
-
+#Haccio
 def read_haccio(con, path='hacc-logs/'):
     arr = []
     for subdir, dirs, files in os.walk(path):
@@ -313,9 +441,6 @@ def generate_tables(con):
             elif name == "Custom":
                 sql_create_Custom = "CREATE TABLE Custom ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name_app TEXT, type TEXT, summary TEXT, sysinfo TEXT, fs TEXT);"
                 con.cursor().execute(sql_create_Custom)
-          #  elif name == "DarshanSummariesExtended":
-           #     sql_create_DarshanSummariesExtended= "CREATE TABLE DarshanSummariesExtended ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, meta TEXT, summary TEXT, mounts TEXT, writtenFiles TEXT);"
-            #    con.cursor().execute(sql_create_DarshanSummariesExtended)
 
 
 
@@ -434,7 +559,7 @@ def insert_DarshanSummaries(con, meta, sum, mounts, writtenFiles):
     cursor.execute(sql_insert_result, (meta, sum, mounts, writtenFiles))
     con.commit()
 
-
+#IOR
 def insert_performance(con, pm):
     sql_insert_performance = '''INSERT INTO performances (cmd, ts, te, testID, refnum, api, platform, testFileName, hintsFileName,
         deadlineForStonewall, stoneWallingWearOut, maxTimeDuration, outlierThreshold, \"options\", 
@@ -473,7 +598,7 @@ def insert_performance(con, pm):
         insert_summary(con, pm)
         return 1
 
-
+#IOR
 def insert_summary(con, pm):
     sql_insert_summary = '''INSERT INTO summaries (performance_id, operation, API, TestID, ReferenceNumber, segmentCount, 
     blockSize, transferSize, numTasks, tasksPerNode, repetitions, filePerProc, reorderTasks, taskPerNodeOffset, 
@@ -491,7 +616,7 @@ def insert_summary(con, pm):
         con.commit()
         insert_result(con, cursor.lastrowid, summary.operation, pm.results)
 
-
+#IOR
 def insert_result(con, summary_id, operation, results):
     for result in results:
         if result.access == operation:
@@ -503,6 +628,16 @@ def insert_result(con, summary_id, operation, results):
                 result.openTime, result.wrRdTime, result.closeTime, result.totalTime))
             con.commit()
 
+
+def insert_Darshan_To_Custome(con, summary):
+    sql_insert_result = '''INSERT INTO Custom
+(name_app, "type", summary, sysinfo, fs)
+VALUES(?, ?, ?, ?, ?);
+'''
+    cursor = con.cursor()
+    d = {'name_app': 'Darshan', 'type': 'Benchmark','sysinfo': 'sysinfo', 'fs': 'filesystem'}
+    cursor.execute(sql_insert_result, (d["name_app"], d["type"],json.dumps(summary), d["sysinfo"], d['fs']))
+    con.commit()
 
 def get_fs_settings():
     fs = FilesystemModel()
@@ -546,8 +681,40 @@ def get_darshan(con):
                 darshan.enable_experimental()
                 report.summarize()
                 #change mounts and writtenFile path
-                insert_DarshanSummaries(con=con, meta=json.dumps(report.metadata), sum=json.dumps(report.summary), mounts=json.dumps(report.mounts), writtenFiles=json.dumps(report.name_records))
 
+                #maye make list out of it instead of dictonary (IS NOT JSON IN DB)
+                d = {}
+                d["Meta"]=([report.metadata])
+                d["Summary"]=([report.summary])
+                d["Mounts"] = ([report.mounts])
+                d["Name_Records"] = ([report.name_records])
+                
+                insert_Darshan_To_Custome(con, d)
+
+
+                #insert_DarshanSummaries(con=con, meta=json.dumps(report.metadata), sum=json.dumps(report.summary), mounts=json.dumps(report.mounts), writtenFiles=json.dumps(report.name_records))
+
+def insert_ior_custome(con, summary):
+    sql_insert_result = '''INSERT INTO Custom
+(name_app, "type", summary, sysinfo, fs)
+VALUES(?, ?, ?, ?, ?);
+'''
+    cursor = con.cursor()
+    d = {'name_app': 'IOR', 'type': 'Benchmark','sysinfo': 'sysinfo', 'fs': 'filesystem'}
+    cursor.execute(sql_insert_result, (d["name_app"], d["type"], json.dumps(summary), d["sysinfo"], d['fs']))
+    con.commit()
+    return
+
+def io500_to_custome(con,io500):
+    sql_insert_result = '''INSERT INTO Custom
+(name_app, "type", summary, sysinfo, fs)
+VALUES(?, ?, ?, ?, ?);
+'''
+    cursor = con.cursor()
+    d = {'name_app': 'IO500', 'type': 'Benchmark','sysinfo': 'sysinfo', 'fs': 'filesystem'}
+    cursor.execute(sql_insert_result, (d["name_app"], d["type"], json.dumps(io500.io500ToJSON()), d["sysinfo"], d['fs']))
+    con.commit()
+    return
 
 def get_beegfs_settings():
     settings = []
@@ -559,46 +726,60 @@ def get_beegfs_settings():
     return Beegfs(settings[0], settings[1], settings[2], settings[3], settings[4], settings[5])
 
 
-def startup(mod="test", isCluster=0, rootdir="./", io500Dir="io500-log/2022.06.16-13.32.58/"):
+def startup(mod="test", isCluster=0, rootdir="./", io500Dir="io500-log/2022.07.24-12.45.42/"):
     con = create_connection(r"../IO-Knowledge-API/pythonsqlite.db")
     if mod == 'test':
         io500 = read_io500(io500Dir)
-        generate_tables(con)
-        insert_IOFHs(con, io500)
+        print(io500)
+        #generate_tables(con)
+        #insert_IOFHs(con, io500)
     elif mod == "darshan":
-        generate_tables(con)
+        #generate_tables(con)
         get_darshan(con)
-    #elif mod == "darshanExtended":
-     #   generate_tables(con)
-      #  get_darshanExtended(con)
+    elif mod == "mdtest": 
+        mdtest = read_md_test()
+        generate_tables(con)
+        
+
     elif mod == "reset":
         delete_tables(con)
     elif mod == "io500":
         io500 = read_io500(io500Dir)
-        generate_tables(con)
-        insert_IOFHs(con, io500)
+        with open('readme.txt', 'w') as f:
+            f.write('%s' % io500.io500ToJSON())
+        io500_to_custome(con,io500)
+        #generate_tables(con)
+        #insert_IOFHs(con, io500)
     elif mod == "hacc":
         generate_tables(con)
         read_haccio(con)
     elif mod == 'ior':
-        generate_tables(con)
+        #generate_tables(con)
+        pmlist = []
         if isCluster:
             fs = get_fs_settings()
             for subdir, dirs, files in os.walk(rootdir):
                 for file in files:
                     if file == 'stdout':
-                        print(os.path.join(subdir, file))
+                        #print(os.path.join(subdir, file))
                         pm = read_log(os.path.join(subdir, file), fs)
-                        insert_performance(con, pm)
-                        insert_filesystem(con, pm)
+                        #insert_performance(con, pm)
+                        #insert_filesystem(con, pm)
+                        pmlist.append(pm)
         else:
             for subdir, dirs, files in os.walk(rootdir):
                 fs = Beegfs('1M', 'desired: 4', 'RAID0', '694-62447785-1', 'directory', 'mds01 [ID: 1]')
                 for file in files:
                     if file == 'stdout':
-                        print(os.path.join(subdir, file))
+                        #print(os.path.join(subdir, file))
                         pm = read_log(os.path.join(subdir, file), fs)
-                        insert_performance(con, pm)
+                        #insert_performance(con, pm)
+                        pmlist.append(pm)
+        
+        #TODO: better if we insert directly... now we create a list of all elements and then insert them
+
+        for item in pmlist:
+            insert_ior_custome(con,item)
 
 
 if __name__ == '__main__':
@@ -613,10 +794,12 @@ if __name__ == '__main__':
                         help='Parameter for IO500 Extractor - Dir where to extract io500 results')
     args = parser.parse_args()
     if len(sys.argv) ==1:
-        #startup("test", "./", "2022.06.16-13.32.58/", 0)
-        startup("darshan")
+        #startup("test",0, "./", "io500-log/2022.06.16-13.32.58/")
+        #startup("darshan")
         #startup("io500", io500Dir="io500-log/2022.06.16-13.32.58/")
         #startup("hacc")
+        #read_md_test()
+        startup('ior')
     else:
         startup(args.mod, args.isCluster, args.rootDir, args.io500Dir)
 

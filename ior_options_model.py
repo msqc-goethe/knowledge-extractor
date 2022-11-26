@@ -1,5 +1,9 @@
 
 
+import json
+import re
+
+
 class I0500OptionsModel:
     def __init__(self, api, apiVersion, testFileName, access, type, segments, orderingInaFile, orderingInterFile, taskOffset, nodes,
                  tasks, clientsPerNode, repetitions, xfersize, blocksize, aggregateFilesize, stonewallingTime =-1, stoneWallingWearOut=-1):
@@ -21,6 +25,9 @@ class I0500OptionsModel:
         self.aggregateFilesize = aggregateFilesize
         self.stonewallingTime = stonewallingTime
         self.stoneWallingWearOut = stoneWallingWearOut
+    
+    def IO500OptionsToJSON(self):
+        return json.dumps(self.__dict__)
 
 
 class IO500ResultsModel:
@@ -36,4 +43,7 @@ class IO500ResultsModel:
         self.closeTime = closeTime
         self.totalTime = totalTime
         self.iter = iter
+
+    def IO500ResultsToJSON(self):
+        return json.dumps(self.__dict__)
 

@@ -2,6 +2,7 @@ import platform
 import re
 import traceback
 import subprocess
+import json
 
 
 class Sysmodel:
@@ -22,6 +23,24 @@ class Sysmodel:
     self.distribution_version=distribution_version
     self.memory_capacity=memory_capacity
 
+  def SysmodelToJSON(self):
+    sys = [{
+      "name": self.name,
+      "kernel_version": self.kernel_version,
+      "processor_architecture": self.processor_architecture,
+      "processor_model": self.processor_model,
+      "processor_frequency": self.processor_frequency,
+      "processor_threads": self.processor_threads,
+      "processor_vendor": self.processor_vendor,
+      "processor_L2": self.processor_L2,
+      "processor_L3": self.processor_L3,
+      "processor_coresPerSocket": self.processor_coresPerSocket,
+      "distribution": self.distribution,
+      "distribution_version": self.distribution_version,
+      "memory_capacity": self.memory_capacity
+    }]
+
+    return sys
 
 def re_add(regex, key, data, group=1):
   m = re.search(regex, data)
@@ -31,6 +50,7 @@ def re_add(regex, key, data, group=1):
 
 def get_sys_info():
   sysinfo = Sysmodel()
+  return sysinfo
   sysinfo.name = platform.node()
   sysinfo.kernel_version = platform.release()
   sysinfo.processor_architecture = platform.processor()
