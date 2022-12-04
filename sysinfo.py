@@ -24,7 +24,7 @@ class Sysmodel:
     self.memory_capacity=memory_capacity
 
   def SysmodelToJSON(self):
-    sys = [{
+    sys = {
       "name": self.name,
       "kernel_version": self.kernel_version,
       "processor_architecture": self.processor_architecture,
@@ -38,7 +38,7 @@ class Sysmodel:
       "distribution": self.distribution,
       "distribution_version": self.distribution_version,
       "memory_capacity": self.memory_capacity
-    }]
+    }
 
     return sys
 

@@ -173,7 +173,7 @@ class Test:
         self.Finished = finished
     
     def TestToJSON(self):
-        return {"TestID": self.TestID, "StartTime": self.StartTime, "Path":self.Path, "Used_Capacity": self.Used_Capacity, "Inodes": self.Inodes, "Used_Inodes": self.Used_Inodes, "Parameters": self.Parameters, "Options": self.Options, "Results": self.Results, "Finished": self.Finished}
+        return {"testID": self.TestID, "startTime": self.StartTime, "path":self.Path, "used_Capacity": self.Used_Capacity, "inodes": self.Inodes, "used_Inodes": self.Used_Inodes, "parameters": self.Parameters, "options": self.Options, "results": self.Results, "finished": self.Finished}
 
 
 class Builder:
@@ -209,7 +209,7 @@ class PerformanceModel:
         self.fs = fs
     
     def PerformanceModel(self):
-        return {"ID": self.id, "cmd": self.cmd, "ts": self.ts, "te": self.te, "parameters": self.parameters, "summaries": self.summaries, "results": self.results, "fs": self.fs}
+        return {"id": self.id, "cmd": self.cmd, "ts": self.ts, "te": self.te, "parameters": self.parameters, "summaries": self.summaries, "results": self.results, "fs": self.fs}
 
 
 class FilesystemModel:
@@ -218,7 +218,7 @@ class FilesystemModel:
         self.settings = settings
     
     def FileSystemModeltoJSON(self):
-        return {"Type": self.type, "Settigns": self.settings}
+        return {"type": self.type, "settigns": self.settings}
 
 
 class Beegfs:
@@ -231,7 +231,7 @@ class Beegfs:
         self.StripePatternStoragePool = StripePatternStoragePool
     
     def Beegfs(self):
-        return {"EntryType": self.entryType, "EntryID": self.entryID, "metadataNode": self.metadataNode, "StripePatternType": self.StripePatternType, "StripePatternChunkSize": self.StripePatternChunkSize, "StripePatternStoragePool": self.StripePatternStoragePool}
+        return {"entryType": self.entryType, "entryID": self.entryID, "metadataNode": self.metadataNode, "stripePatternType": self.StripePatternType, "stripePatternChunkSize": self.StripePatternChunkSize, "stripePatternStoragePool": self.StripePatternStoragePool}
 
 class Testcase:
     def __init__(self, name, t_start, exe, score, t_delta, t_end, stonewall =-1, opt=-1, results=-1):
@@ -247,7 +247,7 @@ class Testcase:
     
     def TestCaseToJSON(self):
         if isinstance(self.options, dict) or self.results == -1:
-            read = [{"Name": self.name,
+            read = {"name": self.name,
                 "t_start": self.t_start,
                 "exe": self.exe,
                 "score": self.score,
@@ -256,10 +256,10 @@ class Testcase:
                 "stonewall": self.stonewall,
                 "options": self.options,
                 "results": self.results
-                }]
+                }
             return read
         else:
-            write = [{"Name": self.name,
+            write = {"name": self.name,
                 "t_start": self.t_start,
                 "exe": self.exe,
                 "score": self.score,
@@ -268,7 +268,7 @@ class Testcase:
                 "stonewall": self.stonewall,
                 "options": json.loads(self.options.IO500OptionsToJSON()),
                 "results": json.loads(self.results.IO500ResultsToJSON())
-                }]
+                }
             return write
 
 
@@ -280,7 +280,7 @@ class Score:
         self.hash = hash
     
     def ScoreToJSON(self):
-        return [{"MD": self.MD, "BW": self.BW, "Score": self.SCORE, "hash": self.hash}]
+        return {"MD": self.MD, "BW": self.BW, "score": self.SCORE, "hash": self.hash}
 
 class Run:
     def __init__(self, procs, version, config_hash, result_dir, mode):
@@ -291,7 +291,7 @@ class Run:
         self.mode = mode
 
     def RunToJSON(self):
-        return [{"Procs": self.procs, "Version": self.version, "Config_Hash": self.config_hash, "Result_Dir": self.result_dir, "Mode": self.mode}]
+        return {"procs": self.procs, "version": self.version, "config_hash": self.config_hash, "result_dir": self.result_dir, "mode": self.mode}
 
 class IO500:
     def __init__(self, run, testcases, score, start, end, sysinfo):
@@ -304,15 +304,15 @@ class IO500:
     
     def io500ToJSON(self):
         io500 = {
-            "Run": self.run.RunToJSON(),
-            "Testcases": self.getTestcaseJSON(),
-            "Score": self.score.ScoreToJSON(),
-            "Start": self.start,
-            "End": self.end,
-            "SysInfo": self.sysinfo.SysmodelToJSON()
+            "run": self.run.RunToJSON(),
+            "testcases": self.getTestcaseJSON(),
+            "score": self.score.ScoreToJSON(),
+            "start": self.start,
+            "end": self.end,
+            "sysInfo": self.sysinfo.SysmodelToJSON()
         }
 
-        return [io500]
+        return io500
     
     def getTestcaseJSON(self):
         tcs = []

@@ -126,7 +126,7 @@ def read_io500(path = "2022.06.16-13.32.58/"):
                         testcases.append(tc)
                     else:
                         o,r = read_md_test(line.strip("[]\n"),path)
-                        print(type(o))
+                        #print(type(o))
                         tc = Testcase(line.strip("[]\n"),
                                       lines[i + 1].rstrip().split('=',1)[1],
                                       lines[i + 2].rstrip().split('=',1)[1],
@@ -324,7 +324,7 @@ def get_options_results(testcase, isWrite, folderPath = "2022.06.16-13.32.58/"):
                 for j in range(len(lines) - i):
                     if lines[i+j].startswith('write') or lines[i+j].startswith('read'):
                         r= lines[i+j].split()
-                        print(lines[i+j].split())
+                        #print(lines[i+j].split())
                         result.__init__(r[0],r[1],r[2],r[3],r[4],r[5],r[6],r[7],r[8],r[9],r[10])
     return options, result
 
@@ -462,7 +462,7 @@ def delete_tables(con):
    #print(con.cursor().execute("DROP TABLE DarshanSummariesExtended"))
     print(con.cursor().execute("DROP TABLE Custom"))
 
-
+#Insert HACCIO into custome table
 def insert_custom(con, cu, fs, sy):
     sql_insert_result = '''INSERT INTO Custom
 (name_app, "type", summary, sysinfo, fs)
@@ -629,14 +629,19 @@ def insert_result(con, summary_id, operation, results):
             con.commit()
 
 
+#Insert Darshan into custome table
 def insert_Darshan_To_Custome(con, summary):
     sql_insert_result = '''INSERT INTO Custom
 (name_app, "type", summary, sysinfo, fs)
 VALUES(?, ?, ?, ?, ?);
 '''
     cursor = con.cursor()
+
+    dummy_fs = "{\"entryType\":\"directory\\n\",\"entryID\":\"694-62447785-1\\n\",\"metadataNode\":\"mds01[ID:1]\\n\",\"StripePatternType\":\"RAID0\\n\",\"StripePatternChunkSize\":\"1M\\n\",\"StripePatternStoragePool\":\"desired:4\\n\"}"
+    dummy_sy = "{\"procs\":40,\"name\":\"fuchs.cm.cluster-nv\",\"kernel_version\":\"3.10.0-1160.53.1.el7.x86_64\",\"processor_architecture\":\"x86_64\",\"processor_model\":\"IntelXeonE5-2670v2\",\"processor_frequency\":\"02.50GHz\",\"processor_threads\":2,\"processor_vendor\":\"GenuineIntel\",\"processor_L2\":\"256K\",\"processor_L3\":\"25600K\",\"processor_coresPerSocket\":10,\"distribution\":\"scientific\",\"distribution_version\":\"7.9\",\"memory_capacity\":\"131932792KiB\"}"
+
     d = {'name_app': 'Darshan', 'type': 'Benchmark','sysinfo': 'sysinfo', 'fs': 'filesystem'}
-    cursor.execute(sql_insert_result, (d["name_app"], d["type"],json.dumps(summary), d["sysinfo"], d['fs']))
+    cursor.execute(sql_insert_result, (d["name_app"], d["type"],json.dumps(summary), dummy_sy, dummy_fs))
     con.commit()
 
 def get_fs_settings():
@@ -684,35 +689,46 @@ def get_darshan(con):
 
                 #maye make list out of it instead of dictonary (IS NOT JSON IN DB)
                 d = {}
-                d["Meta"]=([report.metadata])
-                d["Summary"]=([report.summary])
-                d["Mounts"] = ([report.mounts])
-                d["Name_Records"] = ([report.name_records])
+                d["meta"]=(report.metadata)
+                d["summary"]=(report.summary)
+                d["mounts"] = (report.mounts)
+                d["name_records"] = (report.name_records)
                 
                 insert_Darshan_To_Custome(con, d)
 
 
                 #insert_DarshanSummaries(con=con, meta=json.dumps(report.metadata), sum=json.dumps(report.summary), mounts=json.dumps(report.mounts), writtenFiles=json.dumps(report.name_records))
 
+#insert ior in custome table
 def insert_ior_custome(con, summary):
     sql_insert_result = '''INSERT INTO Custom
 (name_app, "type", summary, sysinfo, fs)
 VALUES(?, ?, ?, ?, ?);
 '''
     cursor = con.cursor()
+
+    dummy_fs = "{\"entryType\":\"directory\\n\",\"entryID\":\"694-62447785-1\\n\",\"metadataNode\":\"mds01[ID:1]\\n\",\"StripePatternType\":\"RAID0\\n\",\"StripePatternChunkSize\":\"1M\\n\",\"StripePatternStoragePool\":\"desired:4\\n\"}"
+    dummy_sy = "{\"procs\":40,\"name\":\"fuchs.cm.cluster-nv\",\"kernel_version\":\"3.10.0-1160.53.1.el7.x86_64\",\"processor_architecture\":\"x86_64\",\"processor_model\":\"IntelXeonE5-2670v2\",\"processor_frequency\":\"02.50GHz\",\"processor_threads\":2,\"processor_vendor\":\"GenuineIntel\",\"processor_L2\":\"256K\",\"processor_L3\":\"25600K\",\"processor_coresPerSocket\":10,\"distribution\":\"scientific\",\"distribution_version\":\"7.9\",\"memory_capacity\":\"131932792KiB\"}"
+
     d = {'name_app': 'IOR', 'type': 'Benchmark','sysinfo': 'sysinfo', 'fs': 'filesystem'}
-    cursor.execute(sql_insert_result, (d["name_app"], d["type"], json.dumps(summary), d["sysinfo"], d['fs']))
+    cursor.execute(sql_insert_result, (d["name_app"], d["type"], json.dumps(summary), dummy_sy, dummy_fs))
     con.commit()
     return
 
+#Insert IO500 in custome table
 def io500_to_custome(con,io500):
     sql_insert_result = '''INSERT INTO Custom
 (name_app, "type", summary, sysinfo, fs)
 VALUES(?, ?, ?, ?, ?);
 '''
     cursor = con.cursor()
+
+
+    dummy_fs = "{\"entryType\":\"directory\\n\",\"entryID\":\"694-62447785-1\\n\",\"metadataNode\":\"mds01[ID:1]\\n\",\"StripePatternType\":\"RAID0\\n\",\"StripePatternChunkSize\":\"1M\\n\",\"StripePatternStoragePool\":\"desired:4\\n\"}"
+    dummy_sy = "{\"procs\":40,\"name\":\"fuchs.cm.cluster-nv\",\"kernel_version\":\"3.10.0-1160.53.1.el7.x86_64\",\"processor_architecture\":\"x86_64\",\"processor_model\":\"IntelXeonE5-2670v2\",\"processor_frequency\":\"02.50GHz\",\"processor_threads\":2,\"processor_vendor\":\"GenuineIntel\",\"processor_L2\":\"256K\",\"processor_L3\":\"25600K\",\"processor_coresPerSocket\":10,\"distribution\":\"scientific\",\"distribution_version\":\"7.9\",\"memory_capacity\":\"131932792KiB\"}"
+
     d = {'name_app': 'IO500', 'type': 'Benchmark','sysinfo': 'sysinfo', 'fs': 'filesystem'}
-    cursor.execute(sql_insert_result, (d["name_app"], d["type"], json.dumps(io500.io500ToJSON()), d["sysinfo"], d['fs']))
+    cursor.execute(sql_insert_result, (d["name_app"], d["type"], json.dumps(io500.io500ToJSON()), dummy_sy, dummy_fs))
     con.commit()
     return
 
@@ -727,7 +743,7 @@ def get_beegfs_settings():
 
 
 def startup(mod="test", isCluster=0, rootdir="./", io500Dir="io500-log/2022.07.24-12.45.42/"):
-    con = create_connection(r"../IO-Knowledge-API/pythonsqlite.db")
+    con = create_connection(r"pythonsqlite.db")
     if mod == 'test':
         io500 = read_io500(io500Dir)
         print(io500)
@@ -795,8 +811,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if len(sys.argv) ==1:
         #startup("test",0, "./", "io500-log/2022.06.16-13.32.58/")
-        #startup("darshan")
-        #startup("io500", io500Dir="io500-log/2022.06.16-13.32.58/")
+        startup("darshan")
+        startup("io500", io500Dir="io500-log/2022.06.16-13.32.58/")
+        startup("io500", io500Dir="io500-log/2022.07.24-12.45.42/")
         #startup("hacc")
         #read_md_test()
         startup('ior')
